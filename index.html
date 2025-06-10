@@ -151,9 +151,9 @@
                 themeColor: "#E6007E", // Pink
                 quadrantLabels: {
                     synergy: { name: 'Synergy (DUO)', advice: "You're in a great spot! <strong>Next Step:</strong> Schedule a quarterly sync to review your partnership, celebrate wins, and identify one new strategic initiative you can tackle together to push the boundaries." },
-                    energy: { name: 'Energy (Pair)', advice: "You have a foundation of trust. <strong>Next Step:</strong> To build skills alignment, schedule a 30-minute planning session for a key account and ask: 1) 'What is the single most important thing we want to achieve with this customer?' and 2) 'How can we best combine our skills to make that happen?'" },
-                    apathy: { name: 'Apathy (Colleagues)', advice: "The foundation needs to be built. <strong>Next Step:</strong> Find a low-pressure moment (like a virtual coffee) to ask: 1) 'To help me be a better partner, could you share a bit about your work style and what you value most in an SE?' and 2) 'Here are my main goals for this quarter; what are yours?'" },
-                    anarchy: { name: 'Anarchy (Competitors)', advice: "This is a tough spot that requires an open conversation. <strong>Next Step:</strong> Propose a meeting to establish 'Rules of Engagement'. Start by saying, 'I want to improve our partnership. Can we agree on clear lanes for deal strategy, technical validation, and customer communication to build more trust?' A manager's help might be needed." }
+                    energy: { name: 'Energy (Pair)', advice: "You have a foundation of trust, but performance isn't aligned. <strong>Next Step:</strong> Schedule a 30-min planning session for a key account and ask: 1) 'What is the single most important thing we want to achieve with this customer?' and 2) 'How can we best combine our skills to make that happen?'" },
+                    apathy: { name: 'Apathy (Colleagues)', advice: "You are working independently. The foundation needs to be built. <strong>Next Step:</strong> Find a low-pressure moment (like a virtual coffee) to ask: 1) 'To help me be a better partner, what do you value most in an SE?' and 2) 'Here are my main goals for this quarter; what are yours?'" },
+                    anarchy: { name: 'Anarchy (Competitors)', advice: "A lack of trust is causing competition. <strong>Next Step:</strong> Propose a meeting to establish 'Rules of Engagement'. Start by saying, 'I want to improve our partnership. Can we agree on clear lanes for deal strategy, technical validation, and customer communication to build more trust?' A manager's help might be needed." }
                 },
                 questions: [
                     { axis: 'trust', title: "Mutual Trust", question: "We mutually believe in each other's honesty, reliability, and competence." },
@@ -201,15 +201,14 @@
                                 line1: { type: 'line', xMin: 2.5, xMax: 2.5, yMin: 0, yMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
                                 line2: { type: 'line', yMin: 2.5, yMax: 2.5, xMin: 0, xMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
                                 synergy: { type: 'label', xValue: 3.75, yValue: 3.75, content: 'Synergy', font: {size: 16, weight: 'bold'}, color: 'rgba(40, 167, 69, 0.5)' },
-                                energy: { type: 'label', xValue: 1.25, yValue: 3.75, content: 'Energy', font: {size: 16, weight: 'bold'}, color: 'rgba(255, 193, 7, 0.5)' },
+                                energy: { type: 'label', xValue: 3.75, yValue: 1.25, content: 'Energy', font: {size: 16, weight: 'bold'}, color: 'rgba(255, 193, 7, 0.5)' },
                                 apathy: { type: 'label', xValue: 1.25, yValue: 1.25, content: 'Apathy', font: {size: 16, weight: 'bold'}, color: 'rgba(108, 117, 125, 0.5)' },
-                                anarchy: { type: 'label', xValue: 3.75, yValue: 1.25, content: 'Anarchy', font: {size: 16, weight: 'bold'}, color: 'rgba(220, 53, 69, 0.5)' }
+                                anarchy: { type: 'label', xValue: 1.25, yValue: 3.75, content: 'Anarchy', font: {size: 16, weight: 'bold'}, color: 'rgba(220, 53, 69, 0.5)' }
                             }}
                         }
                     }
                 };
                 if (ctx) { 
-                    // No need for Chart.register with modern Chart.js and this plugin version
                     skillChart = new Chart(ctx, config); 
                 }
             };
