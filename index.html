@@ -64,6 +64,57 @@
         .btn-relationship { background-color: var(--hibob-pink); }
         .btn-reset { background-color: var(--hibob-gray); }
         .btn-download { background-color: var(--hibob-pink); }
+
+        /* Tooltip styles */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        .tooltip-icon {
+            cursor: pointer;
+            color: var(--hibob-gray);
+            border: 1px solid var(--hibob-gray);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: var(--hibob-dark);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--hibob-dark) transparent transparent transparent;
+        }
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -156,12 +207,12 @@
                     anarchy: { name: 'Anarchy (Competitors)', advice: "A lack of trust is causing competition. <strong>Next Step:</strong> Propose a meeting to establish 'Rules of Engagement'. Start by saying, 'I want to improve our partnership. Can we agree on clear lanes for deal strategy, technical validation, and customer communication to build more trust?' A manager's help might be needed." }
                 },
                 questions: [
-                    { axis: 'trust', title: "Mutual Trust", question: "We mutually believe in each other's honesty, reliability, and competence." },
-                    { axis: 'trust', title: "Reliable Backup", question: "I trust my AE to represent our solution accurately, and they trust me to handle technical aspects flawlessly." },
-                    { axis: 'trust', title: "Open Communication", question: "We can have open, honest conversations about deal strategy, even when we disagree." },
-                    { axis: 'skills', title: "Aligned Objective", question: "We have a clear and shared understanding of the common objective we need to achieve on our deals." },
-                    { axis: 'skills', title: "Effective Collaboration", question: "We effectively apply our individual skills and knowledge to serve our common goal." },
-                    { axis: 'skills', title: "Strategic Planning", question: "We strategically plan our joint activities (demos, meetings, follow-ups) to maximize our impact." }
+                    { axis: 'trust', title: "Mutual Trust", question: "We mutually believe in each other's honesty, reliability, and competence.", helperText: "Do we follow through on our commitments? Do I trust their judgement in front of a customer? Do they trust mine?" },
+                    { axis: 'trust', title: "Reliable Backup", question: "I trust my AE to represent our solution accurately, and they trust me to handle technical aspects flawlessly.", helperText: "Can my AE handle initial questions without me? Do they know when to pull me in? Do they respect my role in technical discussions?" },
+                    { axis: 'trust', title: "Open Communication", question: "We can have open, honest conversations about deal strategy, even when we disagree.", helperText: "Can we challenge each other's ideas without it becoming personal? Do we have regular, candid deal reviews?" },
+                    { axis: 'skills', title: "Aligned Objective", question: "We have a clear and shared understanding of the common objective we need to achieve on our deals.", helperText: "Can we both articulate the customer's desired outcome and our strategy to get there? Are we on the same page about what 'winning' looks like?" },
+                    { axis: 'skills', title: "Effective Collaboration", question: "We effectively apply our individual skills and knowledge to serve our common goal.", helperText: "Do our individual activities feel connected and complementary? Do we know who is responsible for what without confusion?" },
+                    { axis: 'skills', title: "Strategic Planning", question: "We strategically plan our joint activities (demos, meetings, follow-ups) to maximize our impact.", helperText: "Do we plan our meetings together beforehand? Do we have a clear plan for post-meeting follow-up? Is our process repeatable and efficient?" }
                 ]
             };
 
@@ -201,9 +252,9 @@
                                 line1: { type: 'line', xMin: 2.5, xMax: 2.5, yMin: 0, yMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
                                 line2: { type: 'line', yMin: 2.5, yMax: 2.5, xMin: 0, xMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
                                 synergy: { type: 'label', xValue: 3.75, yValue: 3.75, content: 'Synergy', font: {size: 16, weight: 'bold'}, color: 'rgba(40, 167, 69, 0.5)' },
-                                energy: { type: 'label', xValue: 3.75, yValue: 1.25, content: 'Energy', font: {size: 16, weight: 'bold'}, color: 'rgba(255, 193, 7, 0.5)' },
+                                energy: { type: 'label', xValue: 3.75, yValue: 1.25, content: 'Anarchy', font: {size: 16, weight: 'bold'}, color: 'rgba(220, 53, 69, 0.5)' },
                                 apathy: { type: 'label', xValue: 1.25, yValue: 1.25, content: 'Apathy', font: {size: 16, weight: 'bold'}, color: 'rgba(108, 117, 125, 0.5)' },
-                                anarchy: { type: 'label', xValue: 1.25, yValue: 3.75, content: 'Anarchy', font: {size: 16, weight: 'bold'}, color: 'rgba(220, 53, 69, 0.5)' }
+                                anarchy: { type: 'label', xValue: 1.25, yValue: 3.75, content: 'Energy', font: {size: 16, weight: 'bold'}, color: 'rgba(255, 193, 7, 0.5)' }
                             }}
                         }
                     }
@@ -253,7 +304,17 @@
                     for (let i = 1; i <= 5; i++) {
                         starsHTML += `<button data-ae-index="${aeIndex}" data-q-index="${qIndex}" data-rate="${i}" class="star-btn transition-transform duration-200 ease-in-out transform hover:scale-125 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full p-1" style="--ring-color: ${themeColor}" aria-label="Rate ${i} out of 5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${score >= i ? 'text-yellow-400 fill-current' : 'text-gray-300'}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>`;
                     }
-                    return `<div class="py-3 sm:flex sm:items-center sm:justify-between"><p class="text-sm text-gray-700 sm:w-2/5">${q.title}: <span class="italic text-gray-500">"${q.question}"</span></p><div class="flex justify-center items-center space-x-1 mt-2 sm:mt-0">${starsHTML}</div></div>`;
+                    return `
+                        <div class="py-3 sm:flex sm:items-center sm:justify-between">
+                            <div class="text-sm text-gray-700 sm:w-2/5 flex items-center">
+                                <span>${q.title}: <span class="italic text-gray-500">"${q.question}"</span></span>
+                                <div class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">${q.helperText}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-center items-center space-x-1 mt-2 sm:mt-0">${starsHTML}</div>
+                        </div>`;
                 }).join('<hr>');
 
                 return `<div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/50" data-ae-card-index="${aeIndex}"><h3 class="text-xl font-bold p-2 rounded-lg w-full mb-4 text-center" style="color: ${themeColor}">${aeName}</h3><div class="space-y-2">${questionsHTML}</div></div>`;
