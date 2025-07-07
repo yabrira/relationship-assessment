@@ -3,454 +3,840 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AE/SE Relationship Assessment</title>
+    <title>AE/SE Strategic Partnership Assessment</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for the radar chart and chartjs-plugin-annotation -->
+    <!-- Chart.js and annotation plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script>
-
     <!-- jsPDF and html2canvas for PDF download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* Custom font and HiBob-inspired color scheme */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        
         :root {
-            --hibob-purple: #5C3BFF;
-            --hibob-teal: #00C4B3;
-            --hibob-pink: #E6007E;
-            --hibob-dark: #1E2022;
-            --hibob-light-gray: #F8F9FA;
-            --hibob-gray: #6c757d;
+            --hibob-purple: #5C3BFF; --hibob-teal: #00C4B3; --hibob-pink: #E6007E;
+            --hibob-dark: #1E2022; --hibob-light-gray: #F8F9FA; --hibob-gray: #6c757d;
         }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--hibob-light-gray);
-            color: var(--hibob-dark);
-        }
-        h1, h2, h3 {
-             color: var(--hibob-dark);
-        }
-        .chart-container {
-            position: relative;
-            height: 100%;
-            width: 100%;
-            min-height: 400px;
-        }
-        /* Simple transition for sections */
-        #analysisSection {
-            transition: opacity 0.5s ease-in-out;
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: var(--hibob-light-gray); color: var(--hibob-dark); }
+        h1, h2, h3 { color: var(--hibob-dark); }
+        .chart-container { position: relative; height: 100%; width: 100%; min-height: 400px; }
         .hibob-btn {
-            color: white;
-            font-weight: bold;
-            padding-top: 0.75rem;
-            padding-bottom: 0.75rem;
-            padding-left: 2rem;
-            padding-right: 2rem;
-            border-radius: 0.5rem;
+            color: white; font-weight: bold; padding: 0.75rem 2rem; border-radius: 0.5rem;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; display: inline-block;
         }
-        .hibob-btn:hover {
-            transform: scale(1.05);
-        }
-
+        .hibob-btn:hover { transform: scale(1.05); }
         .btn-relationship { background-color: var(--hibob-pink); }
         .btn-reset { background-color: var(--hibob-gray); }
         .btn-download { background-color: var(--hibob-pink); }
-
-        /* Tooltip styles */
-        .tooltip-container {
-            position: relative;
-            display: inline-block;
-            margin-left: 8px;
-        }
-        .tooltip-icon {
+        
+        /* Tab Styles */
+        .tab-btn, .explainer-tab-btn {
+            padding: 0.75rem 1.5rem;
             cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
             color: var(--hibob-gray);
-            border: 1px solid var(--hibob-gray);
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: inline-flex;
+        }
+        .tab-btn.active, .explainer-tab-btn.active {
+            color: var(--hibob-pink);
+            border-bottom-color: var(--hibob-pink);
+        }
+        .tab-content, .explainer-tab-content {
+            display: none;
+        }
+        .tab-content.active, .explainer-tab-content.active {
+            display: block;
+        }
+        
+        /* Progress Indicator Styles */
+        .step-indicator {
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            font-size: 12px;
+            transition: all 0.3s ease;
         }
-        .tooltip-text {
-            visibility: hidden;
-            width: 220px;
-            background-color: var(--hibob-dark);
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -110px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-            font-weight: normal;
+        
+        .step-indicator.active {
+            transform: scale(1.05);
         }
-        .tooltip-text::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: var(--hibob-dark) transparent transparent transparent;
+        
+        /* Personality Assessment Styles */
+        .personality-option:hover {
+            background-color: #f8f9fa;
+            border-color: var(--hibob-pink);
         }
-        .tooltip-container:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
+        
+        .personality-option input[type="radio"]:checked + span {
+            color: var(--hibob-pink);
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-
     <div class="container mx-auto px-4 py-8">
-        
-        <!-- Assessment Page -->
         <div id="assessmentPage">
             <!-- Header -->
-            <header class="text-center mb-10 relative">
-                <h1 id="assessmentTitle" class="text-4xl md:text-5xl font-extrabold tracking-tight">
-                    AE/SE Relationship Assessment
-                </h1>
-                <p id="assessmentSubtitle" class="mt-4 max-w-2xl mx-auto text-lg text-gray-500">
-                    For up to 5 AEs, rate your partnership on Trust and Skills, then click "Show Analysis".
-                </p>
+            <header class="text-center mb-10">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">SE/AE Partnership Assessment</h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-500">A comprehensive tool for Sales Engineers to assess relationships and communication styles with Account Executives.</p>
             </header>
 
-            <!-- Relationship Setup Screen -->
-            <div id="relationshipSetupContainer" class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg text-center">
+            <!-- Progress Indicator -->
+            <div id="progressIndicator" class="max-w-4xl mx-auto mb-8 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="step-indicator active" data-step="1">
+                            <div class="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                            <span class="text-sm font-medium mt-1">Setup</span>
+                        </div>
+                        <div class="step-indicator" data-step="2">
+                            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold">2</div>
+                            <span class="text-sm font-medium mt-1">Personality</span>
+                        </div>
+                        <div class="step-indicator" data-step="3">
+                            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold">3</div>
+                            <span class="text-sm font-medium mt-1">Relationship</span>
+                        </div>
+                        <div class="step-indicator" data-step="4">
+                            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold">4</div>
+                            <span class="text-sm font-medium mt-1">Analysis</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 1: Setup Screen -->
+            <div id="step1Setup" class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg text-center">
                 <h3 class="text-2xl font-bold mb-4">Setup Your Assessment</h3>
+                <p class="text-gray-600 mb-6">As a Sales Engineer, assess your working relationships with Account Executives to improve collaboration and results.</p>
                 <div class="mb-6">
                     <label for="aeCount" class="block text-lg font-medium text-gray-700 mb-2">How many AEs are you assessing?</label>
                     <select id="aeCount" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
                     </select>
                 </div>
-                <div id="aeNameInputs" class="space-y-4 mb-8">
-                    <!-- AE Name input fields will be generated here -->
-                </div>
-                <button id="startRelationshipAssessmentBtn" class="hibob-btn btn-relationship">Start Assessment</button>
+                <div id="aeNameInputs" class="space-y-4 mb-8"></div>
+                <button id="startPersonalityAssessmentBtn" class="hibob-btn btn-relationship">Continue to Personality Assessment</button>
             </div>
 
-            <!-- Skill Levels Questions -->
-            <div id="skillLevelsContainer" class="hidden">
-                <!-- Skill level cards will be inserted here by JavaScript -->
+            <!-- Step 2: Personality Assessment -->
+            <div id="step2Personality" class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg hidden">
+                <h3 class="text-2xl font-bold mb-6 text-center">Personality Assessment</h3>
+                <p class="text-gray-600 mb-8 text-center">Understanding your AE's communication style will help you adapt your approach for better collaboration.</p>
+                <div id="personalityAssessmentContainer"></div>
+                <div class="text-center mt-8">
+                    <button id="backToSetupBtn" class="hibob-btn btn-reset mr-4">Back</button>
+                    <button id="continueToRelationshipBtn" class="hibob-btn btn-relationship">Continue to Relationship Assessment</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Relationship Assessment -->
+            <div id="step3Relationship" class="max-w-4xl mx-auto hidden">
+                <h3 class="text-2xl font-bold mb-6 text-center">Relationship Assessment</h3>
+                <p class="text-gray-600 mb-8 text-center">Rate your working relationship with each AE across key dimensions of trust and collaboration.</p>
+                <div id="aeTabsContainer" class="border-b border-gray-200 mb-6"></div>
+                <div id="aeCardsContainer"></div>
+                <div class="text-center my-10">
+                    <button id="backToPersonalityBtn" class="hibob-btn btn-reset mr-4">Back</button>
+                    <button id="submitBtn" class="hibob-btn btn-relationship">Show Analysis</button>
+                    <p id="feedbackMsg" class="text-red-500 mt-4 hidden">Please rate all skills to see your analysis.</p>
+                </div>
+            </div>
+
+            <!-- Questions are dynamically inserted here before analysis -->
+            <div id="initialQuestionsContainer">
+                <div id="aeTabsContainer" class="border-b border-gray-200 mb-6"></div>
+                <div id="aeCardsContainer"></div>
             </div>
 
             <!-- Action Buttons -->
             <div id="actionButtons" class="text-center my-10 hidden">
-                <button id="submitBtn" class="hibob-btn btn-relationship">
-                    Show Analysis
-                </button>
-                <button id="resetBtn" class="hibob-btn btn-reset ml-4">
-                    Reset
-                </button>
+                <button id="submitBtn" class="hibob-btn btn-relationship">Show Analysis</button>
+                <button id="resetBtn" class="hibob-btn btn-reset ml-4">Reset</button>
                 <p id="feedbackMsg" class="text-red-500 mt-4 hidden">Please rate all skills to see your analysis.</p>
             </div>
             
-            <!-- Analysis Section (Initially Hidden) -->
-            <div id="analysisSection" class="hidden opacity-0 transform translate-y-4">
-                <div id="pdfContent">
+            <!-- Analysis Section (Wraps everything for PDF) -->
+            <div id="pdfContent">
+                <!-- NEW: PDF Header -->
+                <div id="pdfHeader" class="hidden">
+                    <div class="text-center p-8 bg-white rounded-t-2xl border-b-4 border-pink-500">
+                         <h1 class="text-4xl font-extrabold tracking-tight">Strategic Partnership Report</h1>
+                         <p class="mt-2 text-gray-600">This report provides a comprehensive analysis of your AE/SE partnerships, blending quantitative assessment with strategic polarity mapping to identify actionable growth opportunities.</p>
+                    </div>
+                </div>
+
+                <!-- NEW: Top-level Polarity Explainer -->
+                <div id="polarityExplainerSection" class="hidden"></div>
+
+                <!-- Individual ratings cards will be moved here for the report -->
+                <div id="skillLevelsReportContainer"></div>
+
+                <!-- Initial Chart & Summary -->
+                <div id="analysisSection" class="hidden opacity-0 transform translate-y-4">
+                     <div class="text-center my-8 pt-8">
+                        <h2 class="text-3xl font-extrabold tracking-tight">Partnership Analysis Summary</h2>
+                    </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                        <div class="bg-white rounded-2xl shadow-xl p-4 sm:p-6 border border-gray-200/80 flex flex-col">
-                            <h2 id="chartTitle" class="text-2xl font-bold text-center mb-2">AE Relationship Matrix</h2>
-                            <div class="chart-container flex-grow">
-                                <canvas id="skillRadarChart"></canvas>
-                            </div>
+                        <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200/80 flex flex-col">
+                            <h2 class="text-2xl font-bold text-center mb-2">AE Relationship Matrix</h2>
+                            <div class="chart-container flex-grow"><canvas id="skillRadarChart"></canvas></div>
                         </div>
                         <div id="analysisTextContainer" class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200/80">
-                            <h2 class="text-2xl font-bold text-center mb-6">Partnership Analysis</h2>
-                            <div id="relationshipAnalysisText" class="space-y-4">
-                                <!-- Analysis text will be generated here -->
-                            </div>
+                            <h2 class="text-2xl font-bold text-center mb-6">Partnership Diagnosis & Strategy</h2>
+                            <div id="relationshipAnalysisText" class="space-y-6"></div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-8 text-center">
-                    <button id="downloadBtn" class="hibob-btn btn-download">Download Results as PDF</button>
-                </div>
+            </div>
+
+            <!-- Download button outside the PDF content -->
+            <div id="downloadButtonContainer" class="mt-8 text-center hidden">
+                <button id="downloadBtn" class="hibob-btn btn-download">Download Results as PDF</button>
             </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const assessmentData = {
-                title: "AE/SE Relationship Assessment",
-                subtitle: 'For up to 5 AEs, rate your partnership on Trust and Skills, then click "Show Analysis".',
-                type: 'scatter',
-                themeColor: "#E6007E", // Pink
-                quadrantLabels: {
-                    synergy: { name: 'Synergy (DUO)', advice: "You're in a great spot! <strong>Next Step:</strong> Schedule a quarterly sync to review your partnership, celebrate wins, and identify one new strategic initiative you can tackle together to push the boundaries." },
-                    energy: { name: 'Energy (Pair)', advice: "You have a foundation of trust, but performance isn't aligned. <strong>Next Step:</strong> Schedule a 30-min planning session for a key account and ask: 1) 'What is the single most important thing we want to achieve with this customer?' and 2) 'How can we best combine our skills to make that happen?'" },
-                    apathy: { name: 'Apathy (Colleagues)', advice: "You are working independently. The foundation needs to be built. <strong>Next Step:</strong> Find a low-pressure moment (like a virtual coffee) to ask: 1) 'To help me be a better partner, what do you value most in an SE?' and 2) 'Here are my main goals for this quarter; what are yours?'" },
-                    anarchy: { name: 'Anarchy (Competitors)', advice: "A lack of trust is causing competition. <strong>Next Step:</strong> Propose a meeting to establish 'Rules of Engagement'. Start by saying, 'I want to improve our partnership. Can we agree on clear lanes for deal strategy, technical validation, and customer communication to build more trust?' A manager's help might be needed." }
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DATA STRUCTURE ---
+    const assessmentData = {
+        questions: [
+            { axis: 'trust', title: "Mutual Trust", question: "We mutually believe in each other's honesty, reliability, and competence." },
+            { axis: 'trust', title: "Reliable Backup", question: "I trust my AE to represent our solution accurately, and they trust me to handle technical aspects flawlessly." },
+            { axis: 'trust', title: "Open Communication", question: "We can have open, honest conversations about deal strategy, even when we disagree." },
+            { axis: 'skills', title: "Aligned Objective", question: "We have a clear and shared understanding of the common objective we need to achieve on our deals." },
+            { axis: 'skills', title: "Effective Collaboration", question: "We effectively apply our individual skills and knowledge to serve our common goal." },
+            { axis: 'skills', title: "Strategic Planning", question: "We strategically plan our joint activities (demos, meetings, follow-ups) to maximize our impact." }
+        ],
+        socialStyles: {
+            analytical: {
+                name: "Analytical",
+                description: "Focus on facts & logic, listens critically, acts when payoff is clear",
+                characteristics: {
+                    assertiveness: "ASK-directed",
+                    responsiveness: "TASK-focused",
+                    need: "to be right",
+                    orientation: "thinking",
+                    growth: "to declare",
+                    backup: "avoid"
                 },
-                questions: [
-                    { axis: 'trust', title: "Mutual Trust", question: "We mutually believe in each other's honesty, reliability, and competence.", helperText: "Do we follow through on our commitments? Do I trust their judgement in front of a customer? Do they trust mine?" },
-                    { axis: 'trust', title: "Reliable Backup", question: "I trust my AE to represent our solution accurately, and they trust me to handle technical aspects flawlessly.", helperText: "Can my AE handle initial questions without me? Do they know when to pull me in? Do they respect my role in technical discussions?" },
-                    { axis: 'trust', title: "Open Communication", question: "We can have open, honest conversations about deal strategy, even when we disagree.", helperText: "Can we challenge each other's ideas without it becoming personal? Do we have regular, candid deal reviews?" },
-                    { axis: 'skills', title: "Aligned Objective", question: "We have a clear and shared understanding of the common objective we need to achieve on our deals.", helperText: "Can we both articulate the customer's desired outcome and our strategy to get there? Are we on the same page about what 'winning' looks like?" },
-                    { axis: 'skills', title: "Effective Collaboration", question: "We effectively apply our individual skills and knowledge to serve our common goal.", helperText: "Do our individual activities feel connected and complementary? Do we know who is responsible for what without confusion?" },
-                    { axis: 'skills', title: "Strategic Planning", question: "We strategically plan our joint activities (demos, meetings, follow-ups) to maximize our impact.", helperText: "Do we plan our meetings together beforehand? Do we have a clear plan for post-meeting follow-up? Is our process repeatable and efficient?" }
+                strengths: ["Detail-oriented", "Logical thinking", "Thorough analysis", "Reliable execution"],
+                challenges: ["Can be slow to decide", "May over-analyze", "Can seem cold or distant"],
+                communicationStyle: "Speaks directly and often pauses, seldom interrupts, asks more questions, tends to lean back"
+            },
+            driving: {
+                name: "Driving",
+                description: "Straightforward & concise, takes charge, action-oriented",
+                characteristics: {
+                    assertiveness: "TELL-directed",
+                    responsiveness: "TASK-focused",
+                    need: "results",
+                    orientation: "action",
+                    growth: "to listen",
+                    backup: "autocratic"
+                },
+                strengths: ["Quick decision making", "Results-focused", "Direct communication", "High energy"],
+                challenges: ["Can be impatient", "May overlook feelings", "Can be too aggressive"],
+                communicationStyle: "Speaks quickly and firmly, often interrupts, makes declarative statements, tends to lean forward"
+            },
+            amiable: {
+                name: "Amiable",
+                description: "Friendly & flexible, cooperates to gain agreement, provides support",
+                characteristics: {
+                    assertiveness: "ASK-directed",
+                    responsiveness: "PEOPLE-focused",
+                    need: "personal security",
+                    orientation: "relationships",
+                    growth: "to initiate",
+                    backup: "acquiesce"
+                },
+                strengths: ["Great team player", "Builds relationships", "Patient listener", "Supportive"],
+                challenges: ["Can avoid conflict", "May be slow to act", "Can be too accommodating"],
+                communicationStyle: "Talks about people and relationships, uses broad gestures, shares feelings, varied facial expressions"
+            },
+            expressive: {
+                name: "Expressive",
+                description: "Creates excitement and involvement, enthusiastic idea generator, dreams and inspires",
+                characteristics: {
+                    assertiveness: "TELL-directed",
+                    responsiveness: "PEOPLE-focused",
+                    need: "personal approval",
+                    orientation: "spontaneity",
+                    growth: "to check",
+                    backup: "attack"
+                },
+                strengths: ["Creative thinking", "Enthusiasm", "Great motivator", "Big picture vision"],
+                challenges: ["Can be disorganized", "May talk too much", "Can be impulsive"],
+                communicationStyle: "Talks about people and relationships, uses broad gestures, often uses voice for emphasis, varied facial expressions"
+            }
+        },
+        socialStyleQuestions: [
+            { 
+                question: "How does your AE typically approach decision-making?",
+                options: [
+                    { text: "Analyzes all the data and facts before deciding", style: "analytical" },
+                    { text: "Makes quick decisions and takes action immediately", style: "driving" },
+                    { text: "Consults with others and seeks consensus", style: "amiable" },
+                    { text: "Goes with gut instinct and enthusiasm", style: "expressive" }
                 ]
-            };
+            },
+            {
+                question: "How does your AE prefer to communicate in meetings?",
+                options: [
+                    { text: "Presents detailed facts and logical arguments", style: "analytical" },
+                    { text: "Gets straight to the point and drives the agenda", style: "driving" },
+                    { text: "Listens actively and supports others' ideas", style: "amiable" },
+                    { text: "Shares stories and creates excitement", style: "expressive" }
+                ]
+            },
+            {
+                question: "When under pressure, how does your AE typically respond?",
+                options: [
+                    { text: "Withdraws to analyze the situation thoroughly", style: "analytical" },
+                    { text: "Takes charge and pushes for immediate action", style: "driving" },
+                    { text: "Seeks support and collaboration from others", style: "amiable" },
+                    { text: "Becomes more animated and expressive", style: "expressive" }
+                ]
+            },
+            {
+                question: "How does your AE prefer to receive feedback?",
+                options: [
+                    { text: "With specific data and logical reasoning", style: "analytical" },
+                    { text: "Directly and immediately, focusing on results", style: "driving" },
+                    { text: "Privately and with emotional support", style: "amiable" },
+                    { text: "With enthusiasm and recognition of effort", style: "expressive" }
+                ]
+            }
+        ],
+        polarities: {
+            relationship: {
+                title: "Relationship Polarity: Achieving Mutual Trust",
+                greaterPurposeStatement: "To build a resilient partnership that drives exceptional results and professional growth.",
+                deeperFear: "Becoming adversarial, damaging our careers, and losing deals.",
+                poleA: { name: "Harmony & Support", upsides: "Rapport, Empathy, Encouragement, Psychological Safety", downsides: "Conflict Avoidance, Resentment, Stagnation" },
+                poleB: { name: "Candor & Challenge", upsides: "Better Ideas, Accountability, Deep Respect, Growth", downsides: "Defensiveness, Friction, Competition, Mistrust" }
+            },
+            execution: {
+                title: "Execution Polarity: Achieving High Performance",
+                greaterPurposeStatement: "To consistently win deals and create delighted customers through flawless execution.",
+                deeperFear: "Appearing disorganized and unprofessional, leading to lost deals and a poor reputation.",
+                poleA: { name: "Flexibility & Agility", upsides: "Adaptability, Creativity, Responsiveness, Customer-Centricity", downsides: "Chaos, Inconsistency, Unpredictable Messaging" },
+                poleB: { name: "Structure & Process", upsides: "Consistency, Scalability, Predictability, Clarity", downsides: "Rigidity, Bureaucracy, Missed Opportunities, Slowness" }
+            }
+        },
+        quadrantAnalysis: {
+            synergy: {
+                name: 'Synergy (DUO)', summary: "This is a high-performing, high-trust partnership. The focus is on sustaining this positive dynamic.", polarityFocus: 'sustain',
+                narrative: "You are successfully balancing both the Relationship and Execution polarities. The key is to remain intentional about sustaining this high-performing state.",
+                actionSteps: ["Schedule a quarterly 'Partnership Review' to check in on your polarities. Are you still balancing them well?", "Jointly identify one area for strategic innovation for your top account.", "Celebrate your wins publicly to model a positive AE/SE partnership for others."],
+                earlyWarnings: ["A feeling of 'coasting' or not feeling challenged.", "Skipping planning sessions because 'you've got it covered'."]
+            },
+            energy: {
+                name: 'Energy (Pair)', summary: "There is a strong foundation of trust and harmony, but execution is inconsistent. The partnership feels good, but may not be as effective as it could be.", polarityFocus: 'execution', problemPole: 'poleA',
+                narrative: "Your partnership is over-focusing on <strong class='text-purple-600'>Flexibility & Agility</strong>, leading to the downside of chaos and inconsistency. The strategic action is to move towards the upside of <strong class='text-teal-600'>Structure & Process</strong> to bring predictability to your execution.",
+                actionSteps: ["To get the upside of 'Structure & Process', co-create a simple checklist for deal qualification.", "Jointly agree on a clear 'Rules of Engagement' document for discovery, demos, and follow-ups.", "Before your next major customer meeting, conduct a 15-minute pre-call planning session with a defined agenda."],
+                earlyWarnings: ["Feeling that process is getting in the way of customer needs.", "Spending more time on internal documentation than on selling."]
+            },
+            apathy: {
+                name: 'Apathy (Colleagues)', summary: "There's a lack of engagement on both the relationship and execution fronts. The dynamic is defined by inaction, not active conflict.", polarityFocus: 'engage',
+                narrative: "This partnership lacks energy in both polarities. The first step is to intentionally engage with the positive upsides of either pole to build momentum.",
+                actionSteps: ["To get the upside of 'Harmony & Support', schedule a 15-minute virtual coffee with no agenda other than to connect.", "Ask: 'To help me be a better partner, what's one thing you value in an SE/AE partnership?'", "To get the upside of 'Structure & Process', pick one upcoming opportunity and suggest a 10-minute planning call."],
+                earlyWarnings: ["Be mindful that any new energy is better than none. The risk of 'over-correction' is low at this stage. Focus on building momentum."]
+            },
+            anarchy: {
+                name: 'Anarchy (Competitors)', summary: "This relationship is defined by friction and a lack of trust, likely from an over-focus on challenging each other without a foundation of support.", polarityFocus: 'relationship', problemPole: 'poleB',
+                narrative: "Your current dynamic shows an over-focus on <strong class='text-purple-600'>Candor & Challenge</strong>, leading to the downside of friction and mistrust. To improve this partnership, the strategic movement is towards the upside of <strong class='text-teal-600'>Harmony & Support</strong>.",
+                actionSteps: ["To get the upside of 'Harmony & Support', start your next 1:1 by acknowledging a positive contribution they made.", "Use 'I' statements. Instead of 'You did X wrong,' try 'I felt confused when...'", "Propose a 30-minute meeting to establish 'Rules of Engagement,' focusing on building trust, not just winning the argument. A manager's help might be needed."],
+                earlyWarnings: ["Feeling that you're avoiding important, tough conversations.", "A sense that surface-level politeness is masking unresolved issues."]
+            }
+        }
+    };
 
-            // --- State Management ---
-            let scores = {};
-            let skillChart;
+    // --- DOM Elements ---
+    const progressIndicator = document.getElementById('progressIndicator');
+    const step1Setup = document.getElementById('step1Setup');
+    const step2Personality = document.getElementById('step2Personality');
+    const step3Relationship = document.getElementById('step3Relationship');
+    const personalityAssessmentContainer = document.getElementById('personalityAssessmentContainer');
+    const aeTabsContainer = document.getElementById('aeTabsContainer');
+    const aeCardsContainer = document.getElementById('aeCardsContainer');
+    const skillLevelsReportContainer = document.getElementById('skillLevelsReportContainer');
+    const aeCountSelect = document.getElementById('aeCount');
+    const aeNameInputsContainer = document.getElementById('aeNameInputs');
+    const startPersonalityAssessmentBtn = document.getElementById('startPersonalityAssessmentBtn');
+    const backToSetupBtn = document.getElementById('backToSetupBtn');
+    const continueToRelationshipBtn = document.getElementById('continueToRelationshipBtn');
+    const backToPersonalityBtn = document.getElementById('backToPersonalityBtn');
+    const ctx = document.getElementById('skillRadarChart').getContext('2d');
+    const analysisSection = document.getElementById('analysisSection');
+    const analysisContainer = document.getElementById('relationshipAnalysisText');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const feedbackMsg = document.getElementById('feedbackMsg');
+    const downloadButtonContainer = document.getElementById('downloadButtonContainer');
+    const pdfHeader = document.getElementById('pdfHeader');
+    const polarityExplainerSection = document.getElementById('polarityExplainerSection');
 
-            // --- DOM Elements ---
-            const skillLevelsContainer = document.getElementById('skillLevelsContainer');
-            const relationshipSetupContainer = document.getElementById('relationshipSetupContainer');
-            const aeCountSelect = document.getElementById('aeCount');
-            const aeNameInputsContainer = document.getElementById('aeNameInputs');
-            const startRelationshipAssessmentBtn = document.getElementById('startRelationshipAssessmentBtn');
-            const actionButtons = document.getElementById('actionButtons');
-            const ctx = document.getElementById('skillRadarChart').getContext('2d');
-            const analysisSection = document.getElementById('analysisSection');
-            const analysisContainer = document.getElementById('relationshipAnalysisText');
-            const submitBtn = document.getElementById('submitBtn');
-            const resetBtn = document.getElementById('resetBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const feedbackMsg = document.getElementById('feedbackMsg');
+    // --- State & Chart Variables ---
+    let scores = {};
+    let personalityScores = {};
+    let skillChart;
+    let currentStep = 1;
 
-            // --- Functions ---
-            const initializeChart = () => {
-                const config = {
-                    type: 'scatter',
-                    data: { datasets: [] },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        scales: {
-                            x: { title: { display: true, text: 'Trust Score', font: { size: 14, weight: 'bold' } }, min: 0, max: 5 },
-                            y: { title: { display: true, text: 'Skills & Alignment Score', font: { size: 14, weight: 'bold' } }, min: 0, max: 5 }
-                        },
-                        plugins: {
-                            legend: { position: 'top' },
-                            annotation: { annotations: {
-                                line1: { type: 'line', xMin: 2.5, xMax: 2.5, yMin: 0, yMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
-                                line2: { type: 'line', yMin: 2.5, yMax: 2.5, xMin: 0, xMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
-                                synergy: { type: 'label', xValue: 3.75, yValue: 3.75, content: 'Synergy', font: {size: 16, weight: 'bold'}, color: 'rgba(40, 167, 69, 0.5)' },
-                                energy: { type: 'label', xValue: 3.75, yValue: 1.25, content: 'Anarchy', font: {size: 16, weight: 'bold'}, color: 'rgba(220, 53, 69, 0.5)' },
-                                apathy: { type: 'label', xValue: 1.25, yValue: 1.25, content: 'Apathy', font: {size: 16, weight: 'bold'}, color: 'rgba(108, 117, 125, 0.5)' },
-                                anarchy: { type: 'label', xValue: 1.25, yValue: 3.75, content: 'Energy', font: {size: 16, weight: 'bold'}, color: 'rgba(255, 193, 7, 0.5)' }
-                            }}
-                        }
-                    }
-                };
-                if (ctx) { 
-                    skillChart = new Chart(ctx, config); 
+    // --- Core Functions ---
+    const initializeChart = () => {
+        if (skillChart) skillChart.destroy();
+        const config = {
+            type: 'scatter', data: { datasets: [] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { title: { display: true, text: 'Trust Score', font: { size: 14, weight: 'bold' } }, min: 0, max: 5 },
+                    y: { title: { display: true, text: 'Skills & Alignment Score', font: { size: 14, weight: 'bold' } }, min: 0, max: 5 }
+                },
+                plugins: {
+                    legend: { position: 'top' },
+                    annotation: { annotations: {
+                        line1: { type: 'line', xMin: 2.5, xMax: 2.5, yMin: 0, yMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
+                        line2: { type: 'line', yMin: 2.5, yMax: 2.5, xMin: 0, xMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
+                        synergy: { type: 'label', xValue: 3.75, yValue: 3.75, content: 'Synergy', font: {size: 16, weight: 'bold'}, color: 'rgba(40, 167, 69, 0.5)' },
+                        energy: { type: 'label', xValue: 3.75, yValue: 1.25, content: 'Energy', font: {size: 16, weight: 'bold'}, color: 'rgba(255, 193, 7, 0.5)' },
+                        apathy: { type: 'label', xValue: 1.25, yValue: 1.25, content: 'Apathy', font: {size: 16, weight: 'bold'}, color: 'rgba(108, 117, 125, 0.5)' },
+                        anarchy: { type: 'label', xValue: 1.25, yValue: 3.75, content: 'Anarchy', font: {size: 16, weight: 'bold'}, color: 'rgba(220, 53, 69, 0.5)' }
+                    }}
                 }
-            };
+            }
+        };
+        skillChart = new Chart(ctx, config);
+    };
+    
+    const generateGenericPolarityMapHTML = (polarity) => {
+        return `
+            <div class="mt-6 text-center border-t pt-6">
+                <h4 class="font-bold text-xl">${polarity.title}</h4>
+                <p class="text-sm text-gray-500 italic mt-1"><strong>Greater Purpose:</strong> ${polarity.greaterPurposeStatement}</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-4 text-center">
+                <div class="font-bold text-lg">${polarity.poleA.name}</div>
+                <div class="font-bold text-lg">${polarity.poleB.name}</div>
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                    <h5 class="font-semibold">Upsides (We gain...)</h5><p class="text-sm">${polarity.poleA.upsides}</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                    <h5 class="font-semibold">Upsides (We gain...)</h5><p class="text-sm">${polarity.poleB.upsides}</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                    <h5 class="font-semibold">Downsides (of over-focusing)</h5><p class="text-sm">${polarity.poleA.downsides}</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                    <h5 class="font-semibold">Downsides (of over-focusing)</h5><p class="text-sm">${polarity.poleB.downsides}</p>
+                </div>
+            </div>
+            <p class="text-sm text-center text-gray-500 italic mt-4"><strong>Deeper Fear:</strong> ${polarity.deeperFear}</p>
+        `;
+    };
+
+    const renderPolarityExplainer = () => {
+        const matrixExplainerHTML = `
+            <div>
+                <h3 class="text-2xl font-bold text-center mb-4">The Relationship Matrix</h3>
+                <p class="text-center text-gray-600 mb-6">This matrix diagnoses your partnership's current state based on two critical axes: Trust and Skills/Alignment. Your position on the chart reveals the dominant dynamic.</p>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    ${Object.values(assessmentData.quadrantAnalysis).map(q => `
+                        <div class="p-3 rounded-lg bg-gray-50 border">
+                            <p class="font-bold">${q.name}</p>
+                            <p class="text-gray-600">${q.summary}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        const polarityModelHTML = `
+            <div>
+                 <h3 class="text-2xl font-bold text-center mb-4">The Polarity Model</h3>
+                 <p class="text-center mt-2 text-gray-600">Effective partnerships are not about being perfect, but about managing key tensions (polarities). Your results are a reflection of how well you are balancing the two core polarities below.</p>
+                ${generateGenericPolarityMapHTML(assessmentData.polarities.relationship)}
+                ${generateGenericPolarityMapHTML(assessmentData.polarities.execution)}
+            </div>
+        `;
+
+        const explainerHTML = `
+            <div class="bg-white p-8 rounded-2xl shadow-lg mt-8">
+                <div id="explainerTabsContainer" class="border-b border-gray-200 mb-6 flex justify-center">
+                    <button class="explainer-tab-btn active" data-target="matrixExplainer">The Relationship Matrix</button>
+                    <button class="explainer-tab-btn" data-target="polarityExplainer">The Polarity Model</button>
+                </div>
+                <div id="explainerContentContainer">
+                    <div id="matrixExplainer" class="explainer-tab-content active">${matrixExplainerHTML}</div>
+                    <div id="polarityExplainer" class="explainer-tab-content">${polarityModelHTML}</div>
+                </div>
+            </div>
+        `;
+
+        polarityExplainerSection.innerHTML = explainerHTML;
+        polarityExplainerSection.classList.remove('hidden');
+    };
+
+    const showAnalysis = () => {
+        let analysisHTML = '';
+        const datasets = skillChart.data.datasets;
+
+        datasets.forEach((dataset) => {
+            const { aeIndex, label } = dataset;
+            const { x: trust, y: skills } = dataset.data[0];
+            let quadrantKey;
+            if (trust > 2.5 && skills > 2.5) quadrantKey = 'synergy';
+            else if (trust > 2.5 && skills <= 2.5) quadrantKey = 'energy';
+            else if (trust <= 2.5 && skills <= 2.5) quadrantKey = 'apathy';
+            else quadrantKey = 'anarchy';
             
-            const generateAENameInputs = (count) => {
-                let html = '';
-                for (let i = 1; i <= count; i++) {
-                    html += `<input type="text" class="ae-name-setup-input block w-full p-2 border border-gray-300 rounded-md shadow-sm mb-2" placeholder="AE #${i} Name">`;
-                }
-                aeNameInputsContainer.innerHTML = html;
-            };
+            const quadrantInfo = assessmentData.quadrantAnalysis[quadrantKey];
+            const personalityInfo = personalityScores[aeIndex];
+            const styleInfo = assessmentData.socialStyles[personalityInfo.style];
 
-            const startAssessment = () => {
-                const nameInputs = document.querySelectorAll('.ae-name-setup-input');
-                const aeNames = Array.from(nameInputs).map((input, i) => input.value.trim() || `AE #${i + 1}`);
+            const personalityInsightsHTML = `
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 class="font-bold text-lg text-blue-800 mb-2">Communication Style: ${styleInfo.name}</h4>
+                    <p class="text-sm text-blue-700 mb-3">${styleInfo.description}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <h5 class="font-semibold text-blue-800">Strengths:</h5>
+                            <ul class="list-disc list-inside text-blue-700">
+                                ${styleInfo.strengths.map(s => `<li>${s}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-blue-800">Adaptation Tips:</h5>
+                            <ul class="list-disc list-inside text-blue-700">
+                                ${styleInfo.challenges.map(c => `<li>${c}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
 
-                relationshipSetupContainer.classList.add('hidden');
-                skillLevelsContainer.classList.remove('hidden');
-                actionButtons.classList.remove('hidden');
-                skillLevelsContainer.className = 'space-y-8';
+            const actionPlanHTML = `
+                <div class="mt-6 border-t pt-6">
+                    <h4 class="font-bold text-lg text-gray-800">Strategic Narrative & Action Plan</h4>
+                    <p class="text-sm mt-2 text-gray-600">${quadrantInfo.narrative}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="bg-gray-100 p-4 rounded-lg"><h5 class="font-bold text-lg text-green-700">Action Steps</h5><ul class="list-disc list-inside mt-2 space-y-2 text-sm">${quadrantInfo.actionSteps.map(s => `<li>${s}</li>`).join('')}</ul></div>
+                    <div class="bg-gray-100 p-4 rounded-lg"><h5 class="font-bold text-lg text-yellow-700">Early Warnings</h5><ul class="list-disc list-inside mt-2 space-y-2 text-sm">${quadrantInfo.earlyWarnings.map(w => `<li>${w}</li>`).join('')}</ul></div>
+                </div>`;
 
-                renderAECards(aeNames);
-            };
-
-            const renderAECards = (aeNames) => {
-                let html = '';
-                aeNames.forEach((name, i) => {
-                    const aeIndex = i + 1;
-                    scores[aeIndex] = { name: name, ratings: Array(assessmentData.questions.length).fill(0) };
-                    html += createAECardHTML(aeIndex);
-                });
-                skillLevelsContainer.innerHTML = html;
-            };
-
-            const createAECardHTML = (aeIndex) => {
-                const aeName = scores[aeIndex].name;
-                const themeColor = assessmentData.themeColor;
-                
-                let questionsHTML = assessmentData.questions.map((q, qIndex) => {
-                    const score = scores[aeIndex].ratings[qIndex] || 0;
-                    let starsHTML = '';
-                    for (let i = 1; i <= 5; i++) {
-                        starsHTML += `<button data-ae-index="${aeIndex}" data-q-index="${qIndex}" data-rate="${i}" class="star-btn transition-transform duration-200 ease-in-out transform hover:scale-125 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full p-1" style="--ring-color: ${themeColor}" aria-label="Rate ${i} out of 5"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${score >= i ? 'text-yellow-400 fill-current' : 'text-gray-300'}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>`;
-                    }
-                    return `
-                        <div class="py-3 sm:flex sm:items-center sm:justify-between">
-                            <div class="text-sm text-gray-700 sm:w-2/5 flex items-center">
-                                <span>${q.title}: <span class="italic text-gray-500">"${q.question}"</span></span>
-                                <div class="tooltip-container">
-                                    <span class="tooltip-icon">?</span>
-                                    <span class="tooltip-text">${q.helperText}</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-center items-center space-x-1 mt-2 sm:mt-0">${starsHTML}</div>
-                        </div>`;
-                }).join('<hr>');
-
-                return `<div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/50" data-ae-card-index="${aeIndex}"><h3 class="text-xl font-bold p-2 rounded-lg w-full mb-4 text-center" style="color: ${themeColor}">${aeName}</h3><div class="space-y-2">${questionsHTML}</div></div>`;
-            };
-            
-            const handleScoreChange = (qIndex, newScore, aeIndex) => {
-                if (!scores[aeIndex]) scores[aeIndex] = { name: `AE #${aeIndex}`, ratings: Array(assessmentData.questions.length).fill(0) };
-                scores[aeIndex].ratings[qIndex] = scores[aeIndex].ratings[qIndex] === newScore ? 0 : newScore;
-                updateStarsUI(qIndex, aeIndex);
-                updateChartData();
-            };
-
-            const updateStarsUI = (qIndex, aeIndex) => {
-                const container = document.querySelector(`[data-ae-card-index="${aeIndex}"]`);
-                if (!container) return;
-                
-                const score = scores[aeIndex]?.ratings[qIndex] || 0;
-                const starButtons = container.querySelectorAll(`.star-btn[data-q-index="${qIndex}"]`);
-                
-                starButtons.forEach(button => {
-                    const rate = parseInt(button.dataset.rate, 10);
-                    const starIcon = button.querySelector('svg');
-                    starIcon.classList.toggle('text-yellow-400', score >= rate);
-                    starIcon.classList.toggle('fill-current', score >= rate);
-                    starIcon.classList.toggle('text-gray-300', score < rate);
-                });
-            };
-
-            const updateChartData = () => {
-                if (!skillChart) return;
-                const pointColors = ['#5C3BFF', '#00C4B3', '#E6007E', '#FFC107', '#6F42C1'];
-                skillChart.data.datasets = Object.keys(scores).filter(aeIndex => scores[aeIndex]?.ratings.some(r => r > 0)).map((aeIndex, i) => {
-                    const aeData = scores[aeIndex];
-                    const trustScores = aeData.ratings.map((r, idx) => assessmentData.questions[idx].axis === 'trust' ? r : null).filter(r => r !== null);
-                    const skillScores = aeData.ratings.map((r, idx) => assessmentData.questions[idx].axis === 'skills' ? r : null).filter(r => r !== null);
-                    const avgTrust = trustScores.length ? trustScores.reduce((a, b) => a + b, 0) / trustScores.length : 0;
-                    const avgSkills = skillScores.length ? skillScores.reduce((a, b) => a + b, 0) / skillScores.length : 0;
-                    return { label: aeData.name, data: [{ x: avgTrust, y: avgSkills }], backgroundColor: pointColors[i % pointColors.length], pointRadius: 8, pointHoverRadius: 12 };
-                });
-                skillChart.update();
-            };
-
-            const handleSubmit = () => {
-                const allRated = Object.values(scores).length > 0 && Object.values(scores).every(aeData => aeData.ratings.every(r => r > 0));
-                if (allRated) {
-                    feedbackMsg.classList.add('hidden');
-                    showAnalysis();
-                } else {
-                    feedbackMsg.textContent = 'Please complete all ratings for all AEs to see the analysis.';
-                    feedbackMsg.classList.remove('hidden');
-                    hideAnalysis();
-                }
-            };
-            
-            const showAnalysis = () => {
-                let analysisHTML = '';
-                const quadrantLabels = assessmentData.quadrantLabels;
-                const datasets = skillChart.data.datasets;
-                
-                if (datasets.length === 0) {
-                    analysisHTML = `<p class="text-center text-gray-600">No data to analyze. Please complete the ratings for at least one AE.</p>`;
-                } else {
-                    datasets.forEach(dataset => {
-                        const trust = dataset.data[0].x;
-                        const skills = dataset.data[0].y;
-                        let quadrant;
-                        if (trust > 2.5 && skills > 2.5) quadrant = quadrantLabels.synergy;
-                        else if (trust > 2.5 && skills <= 2.5) quadrant = quadrantLabels.energy;
-                        else if (trust <= 2.5 && skills <= 2.5) quadrant = quadrantLabels.apathy;
-                        else quadrant = quadrantLabels.anarchy;
-
-                        analysisHTML += `<div class="p-3 rounded-lg" style="background-color: ${dataset.backgroundColor}33;"><p class="font-bold" style="color: ${dataset.backgroundColor};">${dataset.label}: <span class="font-medium">${quadrant.name}</span></p><p class="mt-1 text-sm text-gray-700">${quadrant.advice}</p></div>`;
-                    });
-                }
-                analysisContainer.innerHTML = analysisHTML;
-
-                analysisSection.classList.remove('hidden');
-                setTimeout(() => {
-                    analysisSection.classList.remove('opacity-0', 'transform', 'translate-y-4');
-                    analysisSection.scrollIntoView({ behavior: 'smooth' });
-                }, 10);
-            };
-
-            const hideAnalysis = () => {
-                analysisSection.classList.add('opacity-0', 'transform', 'translate-y-4');
-                setTimeout(() => analysisSection.classList.add('hidden'), 500);
-            };
-            
-            const handleReset = () => {
-                scores = {};
-                skillLevelsContainer.innerHTML = '';
-                relationshipSetupContainer.classList.remove('hidden');
-                skillLevelsContainer.classList.add('hidden');
-                actionButtons.classList.add('hidden');
-                
-                updateChartData();
-                hideAnalysis();
-                feedbackMsg.classList.add('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            };
-
-            const handleDownload = () => {
-                const { jsPDF } = window.jspdf;
-                const contentToPrint = document.getElementById('pdfContent');
-                
-                html2canvas(contentToPrint, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width, canvas.height] });
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = pdf.internal.pageSize.getHeight();
-                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                    const fileName = `${assessmentData.title.replace(/\s/g, '_')}_Results.pdf`;
-                    pdf.save(fileName);
-                });
-            };
-
-            // --- Event Listeners ---
-            aeCountSelect.addEventListener('change', (e) => generateAENameInputs(e.target.value));
-            startRelationshipAssessmentBtn.addEventListener('click', startAssessment);
-            skillLevelsContainer.addEventListener('click', (e) => {
-                const starButton = e.target.closest('.star-btn');
-                if (starButton) {
-                    const aeIndex = starButton.dataset.aeIndex;
-                    const qIndex = starButton.dataset.qIndex;
-                    const rate = parseInt(starButton.dataset.rate, 10);
-                    handleScoreChange(parseInt(qIndex, 10), rate, aeIndex);
-                }
-            });
-            submitBtn.addEventListener('click', handleSubmit);
-            resetBtn.addEventListener('click', handleReset);
-            downloadBtn.addEventListener('click', handleDownload);
-
-            // Initial setup
-            generateAENameInputs(1);
-            initializeChart();
+            analysisHTML += `
+                <div class="p-6 rounded-lg" style="background-color: ${dataset.backgroundColor}22;">
+                    <p class="font-bold text-2xl" style="color: ${dataset.backgroundColor};">${label}: <span class="font-medium">${quadrantInfo.name}</span></p>
+                    <p class="mt-2 text-md text-gray-700">${quadrantInfo.summary}</p>
+                    ${personalityInsightsHTML}
+                    ${actionPlanHTML}
+                </div>`;
         });
-    </script>
+        analysisContainer.innerHTML = analysisHTML;
+        
+        analysisSection.classList.remove('hidden');
+        downloadButtonContainer.classList.remove('hidden');
+        pdfHeader.classList.remove('hidden');
+        setTimeout(() => {
+            analysisSection.classList.remove('opacity-0', 'transform', 'translate-y-4');
+            analysisSection.scrollIntoView({ behavior: 'smooth' });
+        }, 10);
+    };
+    
+    const updateProgressIndicator = (step) => {
+        document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+            const stepNum = index + 1;
+            const circle = indicator.querySelector('div');
+            if (stepNum <= step) {
+                circle.className = 'w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold';
+            } else {
+                circle.className = 'w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold';
+            }
+        });
+    };
+
+    const showStep = (step) => {
+        currentStep = step;
+        updateProgressIndicator(step);
+        
+        // Hide all steps
+        step1Setup.classList.add('hidden');
+        step2Personality.classList.add('hidden');
+        step3Relationship.classList.add('hidden');
+        progressIndicator.classList.add('hidden');
+        
+        // Show current step
+        if (step === 1) {
+            step1Setup.classList.remove('hidden');
+        } else if (step === 2) {
+            step2Personality.classList.remove('hidden');
+            progressIndicator.classList.remove('hidden');
+        } else if (step === 3) {
+            step3Relationship.classList.remove('hidden');
+            progressIndicator.classList.remove('hidden');
+        }
+    };
+
+    const generateAENameInputs = (count) => {
+        aeNameInputsContainer.innerHTML = Array.from({ length: count }, (_, i) => 
+            `<input type="text" class="ae-name-setup-input block w-full p-2 border border-gray-300 rounded-md shadow-sm mb-2" placeholder="AE #${i + 1} Name">`
+        ).join('');
+    };
+
+    const renderPersonalityAssessment = () => {
+        const nameInputs = document.querySelectorAll('.ae-name-setup-input');
+        const aeNames = Array.from(nameInputs).map(input => input.value.trim() || `AE #${Array.from(nameInputs).indexOf(input) + 1}`);
+        
+        let html = '';
+        aeNames.forEach((aeName, aeIndex) => {
+            html += `
+                <div class="mb-8 p-6 border border-gray-200 rounded-lg">
+                    <h4 class="text-xl font-bold mb-4 text-pink-600">${aeName}</h4>
+                    <p class="text-gray-600 mb-4">Select the option that best describes how this AE typically behaves:</p>
+            `;
+            
+            assessmentData.socialStyleQuestions.forEach((q, qIndex) => {
+                html += `
+                    <div class="mb-6">
+                        <p class="font-medium mb-3">${q.question}</p>
+                        <div class="space-y-2">
+                            ${q.options.map((option, optionIndex) => `
+                                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input type="radio" name="personality_${aeIndex}_${qIndex}" value="${option.style}" class="mr-3" required>
+                                    <span>${option.text}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+        });
+        
+        personalityAssessmentContainer.innerHTML = html;
+    };
+
+    const calculatePersonalityStyle = (aeIndex) => {
+        const styleCounts = { analytical: 0, driving: 0, amiable: 0, expressive: 0 };
+        
+        assessmentData.socialStyleQuestions.forEach((_, qIndex) => {
+            const selectedOption = document.querySelector(`input[name="personality_${aeIndex}_${qIndex}"]:checked`);
+            if (selectedOption) {
+                styleCounts[selectedOption.value]++;
+            }
+        });
+        
+        // Return the style with the highest count
+        return Object.entries(styleCounts).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+    };
+    
+    const startPersonalityAssessment = () => {
+        const nameInputs = document.querySelectorAll('.ae-name-setup-input');
+        if (nameInputs.length === 0 || !nameInputs[0].value.trim()) {
+            alert('Please enter at least one AE name to continue.');
+            return;
+        }
+        
+        renderPersonalityAssessment();
+        showStep(2);
+    };
+
+    const startRelationshipAssessment = () => {
+        // Collect personality scores
+        const nameInputs = document.querySelectorAll('.ae-name-setup-input');
+        personalityScores = {};
+        scores = {};
+        
+        Array.from(nameInputs).forEach((input, i) => {
+            const aeIndex = i;
+            const aeName = input.value.trim() || `AE #${i + 1}`;
+            const personalityStyle = calculatePersonalityStyle(aeIndex);
+            
+            personalityScores[i + 1] = { name: aeName, style: personalityStyle };
+            scores[i + 1] = { name: aeName, ratings: Array(assessmentData.questions.length).fill(0) };
+        });
+        
+        renderAETabsAndCards();
+        showStep(3);
+    };
+
+    const renderAETabsAndCards = () => {
+        aeTabsContainer.innerHTML = Object.keys(scores).map((aeIndex, i) =>
+            `<button class="tab-btn ${i === 0 ? 'active' : ''}" data-ae-index="${aeIndex}">${scores[aeIndex].name}</button>`
+        ).join('');
+
+        aeCardsContainer.innerHTML = Object.keys(scores).map((aeIndex, i) => {
+            const { name, ratings } = scores[aeIndex];
+            const questionsHTML = assessmentData.questions.map((q, qIndex) => {
+                const score = ratings[qIndex] || 0;
+                const starsHTML = Array.from({ length: 5 }, (_, j) => 
+                    `<button data-ae-index="${aeIndex}" data-q-index="${qIndex}" data-rate="${j + 1}" class="star-btn p-1 rounded-full transition-transform duration-200 ease-in-out transform hover:scale-125 focus:outline-none focus:ring-2 focus:ring-offset-2" style="--ring-color: var(--hibob-pink);" aria-label="Rate ${j + 1}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${score >= j + 1 ? 'text-yellow-400 fill-current' : 'text-gray-300'}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>`
+                ).join('');
+                return `<div class="py-3 sm:flex sm:items-center sm:justify-between"><p class="text-sm text-gray-700 sm:w-2/5">${q.title}: <span class="italic text-gray-500">"${q.question}"</span></p><div class="flex justify-center items-center space-x-1 mt-2 sm:mt-0">${starsHTML}</div></div>`;
+            }).join('<hr class="my-1">');
+            return `<div class="tab-content ${i === 0 ? 'active' : ''}" data-ae-index="${aeIndex}"><div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/50">${questionsHTML}</div></div>`;
+        }).join('');
+    };
+
+    const switchTab = (aeIndex) => {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.querySelector(`.tab-btn[data-ae-index="${aeIndex}"]`).classList.add('active');
+        document.querySelector(`.tab-content[data-ae-index="${aeIndex}"]`).classList.add('active');
+    };
+
+    const switchExplainerTab = (targetId) => {
+        document.querySelectorAll('.explainer-tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.explainer-tab-content').forEach(content => content.classList.remove('active'));
+        document.querySelector(`.explainer-tab-btn[data-target="${targetId}"]`).classList.add('active');
+        document.getElementById(targetId).classList.add('active');
+    };
+
+    const handleScoreChange = (aeIndex, qIndex, newScore) => {
+        scores[aeIndex].ratings[qIndex] = scores[aeIndex].ratings[qIndex] === newScore ? 0 : newScore;
+        updateStarsUI(aeIndex, qIndex);
+    };
+
+    const updateStarsUI = (aeIndex, qIndex) => {
+        const score = scores[aeIndex]?.ratings[qIndex] || 0;
+        const starButtons = document.querySelectorAll(`.star-btn[data-ae-index="${aeIndex}"][data-q-index="${qIndex}"]`);
+        starButtons.forEach(button => {
+            const rate = parseInt(button.dataset.rate, 10);
+            const starIcon = button.querySelector('svg');
+            starIcon.classList.toggle('text-yellow-400', score >= rate);
+            starIcon.classList.toggle('fill-current', score >= rate);
+            starIcon.classList.toggle('text-gray-300', score < rate);
+        });
+    };
+    
+    const handleSubmit = () => {
+        if (Object.values(scores).some(ae => ae.ratings.some(r => r === 0))) {
+            feedbackMsg.classList.remove('hidden');
+            return;
+        }
+        feedbackMsg.classList.add('hidden');
+        
+        renderPolarityExplainer();
+
+        skillLevelsReportContainer.innerHTML = `<div class="text-center my-8 pt-8 border-t-2"><h2 class="text-3xl font-extrabold tracking-tight">Individual Assessment Details</h2></div>` + 
+        Object.keys(scores).map(aeIndex => {
+             const { name, ratings } = scores[aeIndex];
+             const personalityInfo = personalityScores[aeIndex];
+             const styleInfo = assessmentData.socialStyles[personalityInfo.style];
+            const questionsHTML = assessmentData.questions.map((q, qIndex) => {
+                const score = ratings[qIndex] || 0;
+                return `<div class="py-2 sm:flex sm:items-center sm:justify-between"><p class="text-sm text-gray-700 sm:w-2/5">${q.title}:</p><p class="text-sm font-bold text-right">${score} / 5</p></div>`;
+            }).join('<hr class="my-1 border-gray-200">');
+            
+            const personalityHTML = `
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 class="font-semibold text-blue-800 mb-2">Communication Style: ${styleInfo.name}</h4>
+                    <p class="text-sm text-blue-700">${styleInfo.description}</p>
+                </div>
+            `;
+            
+            return `<div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/50 mb-8">
+                <h3 class="text-xl font-bold p-2 rounded-lg w-full mb-4 text-center" style="color: var(--hibob-pink);">${name}</h3>
+                <div class="space-y-2">${questionsHTML}</div>
+                ${personalityHTML}
+            </div>`;
+        }).join('');
+
+        step3Relationship.classList.add('hidden');
+
+        const pointColors = ['#5C3BFF', '#00C4B3', '#E6007E', '#FFC107', '#6F42C1'];
+        skillChart.data.datasets = Object.keys(scores).map((aeIndex, i) => {
+            const aeData = scores[aeIndex];
+            const trustScores = aeData.ratings.map((r, idx) => assessmentData.questions[idx].axis === 'trust' ? r : null).filter(r => r !== null);
+            const skillScores = aeData.ratings.map((r, idx) => assessmentData.questions[idx].axis === 'skills' ? r : null).filter(r => r !== null);
+            const avgTrust = trustScores.length ? trustScores.reduce((a, b) => a + b, 0) / trustScores.length : 0;
+            const avgSkills = skillScores.length ? skillScores.reduce((a, b) => a + b, 0) / skillScores.length : 0;
+            return {
+                label: aeData.name, aeIndex: aeIndex, data: [{ x: avgTrust, y: avgSkills }], 
+                backgroundColor: pointColors[i % pointColors.length], pointRadius: 10, pointHoverRadius: 14
+            };
+        });
+        skillChart.update();
+        showAnalysis();
+    };
+
+    const handleReset = () => {
+        scores = {};
+        personalityScores = {};
+        currentStep = 1;
+        
+        // Reset all containers
+        skillLevelsReportContainer.innerHTML = '';
+        analysisSection.classList.add('hidden', 'opacity-0');
+        downloadButtonContainer.classList.add('hidden');
+        feedbackMsg.classList.add('hidden');
+        pdfHeader.classList.add('hidden');
+        polarityExplainerSection.classList.add('hidden');
+        
+        // Reset form inputs
+        document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+        document.querySelectorAll('.ae-name-setup-input').forEach(input => input.value = '');
+        
+        // Go back to step 1
+        showStep(1);
+        initializeChart();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleDownload = () => {
+        const { jsPDF } = window.jspdf;
+        const contentToPrint = document.getElementById('pdfContent');
+        html2canvas(contentToPrint, { scale: 2, backgroundColor: '#ffffff', windowWidth: document.documentElement.scrollWidth, windowHeight: document.documentElement.scrollHeight }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({ orientation: 'p', unit: 'px', format: [canvas.width, canvas.height]});
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save("Strategic_Partnership_Results.pdf");
+        });
+    };
+
+    // --- Event Listeners ---
+    aeCountSelect.addEventListener('change', (e) => generateAENameInputs(e.target.value));
+    startPersonalityAssessmentBtn.addEventListener('click', startPersonalityAssessment);
+    backToSetupBtn.addEventListener('click', () => showStep(1));
+    continueToRelationshipBtn.addEventListener('click', startRelationshipAssessment);
+    backToPersonalityBtn.addEventListener('click', () => showStep(2));
+    submitBtn.addEventListener('click', handleSubmit);
+    resetBtn.addEventListener('click', handleReset);
+    downloadBtn.addEventListener('click', handleDownload);
+
+    step3Relationship.addEventListener('click', e => {
+        const starButton = e.target.closest('.star-btn');
+        if (starButton) {
+            const { aeIndex, qIndex, rate } = starButton.dataset;
+            handleScoreChange(aeIndex, parseInt(qIndex), parseInt(rate));
+        }
+        const tabButton = e.target.closest('.tab-btn');
+        if (tabButton) {
+            switchTab(tabButton.dataset.aeIndex);
+        }
+    });
+
+    polarityExplainerSection.addEventListener('click', e => {
+        const explainerTabButton = e.target.closest('.explainer-tab-btn');
+        if(explainerTabButton) {
+            switchExplainerTab(explainerTabButton.dataset.target);
+        }
+    });
+
+    // --- Initial Page Load ---
+    generateAENameInputs(1);
+    initializeChart();
+});
+</script>
+
 </body>
 </html>
