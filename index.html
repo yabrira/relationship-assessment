@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AE/SE Strategic Partnership Assessment</title>
+    <title>Strategic Partnership Assessment</title>
+    <link rel="icon" type="image/png" href="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.facebook.com%2FHiBobHR%2F&psig=AOvVaw3wt-IfuuNsXVb6cS86bjUl&ust=1752595208729000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCMjNsIjcvI4DFQAAAAAdAAAAABAE">
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js and annotation plugin -->
@@ -51,28 +52,51 @@
         .tab-content.active, .explainer-tab-content.active {
             display: block;
         }
-        
-        /* Progress Indicator Styles */
-        .step-indicator {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.3s ease;
+        /* Stepper UI styles - update for custom pink */
+        .stepper-step .active-step {
+            background: rgb(230, 0, 126) !important;
+            color: #fff !important;
         }
-        
-        .step-indicator.active {
-            transform: scale(1.05);
+        .stepper-step .inactive-step {
+            background: #e5e7eb !important;
+            color: #6b7280 !important;
         }
-        
-        /* Personality Assessment Styles */
-        .personality-option:hover {
-            background-color: #f8f9fa;
-            border-color: var(--hibob-pink);
+
+        /* Star rating styles */
+        .star-rating {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
         }
-        
-        .personality-option input[type="radio"]:checked + span {
-            color: var(--hibob-pink);
-            font-weight: 600;
+        .star {
+          width: 28px;
+          height: 28px;
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          outline: none;
+          color: #d1d5db;
+          transition: color 0.2s;
+          font-size: 1.5rem;
+          line-height: 1;
+        }
+        .star.selected,
+        .star.filled {
+          color: rgb(230, 0, 126);
+        }
+        /* Add divider style for section separation */
+        .section-divider {
+          border-top: 2px solid #f1f1f1;
+          margin: 2.5rem 0 2rem 0;
+        }
+        @media print {
+          body.print-mode #assessmentPage > *:not(#step-results) { display: none !important; }
+          body.print-mode #step-results { display: block !important; }
+          body.print-mode .hibob-btn, body.print-mode select, body.print-mode input, body.print-mode .stepper-step, body.print-mode #results-back-btn, body.print-mode #results-download-btn, body.print-mode #print-friendly-btn, body.print-mode #example-pdf-btns-container-setup, body.print-mode #example-pdf-btn-container { display: none !important; }
+          body.print-mode { background: white !important; }
+          #step-results { box-shadow: none !important; border: none !important; }
+          .print-page-break { page-break-before: always !important; break-before: page !important; }
         }
     </style>
 </head>
@@ -81,76 +105,93 @@
         <div id="assessmentPage">
             <!-- Header -->
             <header class="text-center mb-10">
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">SE/AE Partnership Assessment</h1>
-                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-500">A comprehensive tool for Sales Engineers to assess relationships and communication styles with Account Executives.</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">Strategic Partnership Assessment</h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-500">A tool blending relationship diagnosis with polarity mapping for strategic growth.</p>
             </header>
+            <!-- Stepper UI -->
+            <div class="w-full max-w-3xl mx-auto mt-8 mb-6">
+                <ol class="flex items-center w-full text-sm font-medium text-center text-gray-500">
+                    <li class="flex-1 stepper-step" id="stepper-setup">
+                        <span class="block p-2 rounded-full active-step mx-auto mb-1">1</span>
+                        <span>Setup</span>
+                    </li>
+                    <li class="flex-1 stepper-step" id="stepper-assessment">
+                        <span class="block p-2 rounded-full inactive-step mx-auto mb-1">2</span>
+                        <span>Assessment</span>
+                    </li>
+                    <li class="flex-1 stepper-step" id="stepper-results">
+                        <span class="block p-2 rounded-full inactive-step mx-auto mb-1">3</span>
+                        <span>Results</span>
+                    </li>
+                </ol>
+            </div>
 
-            <!-- Progress Indicator -->
-            <div id="progressIndicator" class="max-w-4xl mx-auto mb-8 hidden">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="step-indicator active" data-step="1">
-                            <div class="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
-                            <span class="text-sm font-medium mt-1">Setup</span>
-                        </div>
-                        <div class="step-indicator" data-step="2">
-                            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold">2</div>
-                            <span class="text-sm font-medium mt-1">Personality</span>
-                        </div>
-                        <div class="step-indicator" data-step="3">
-                            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold">3</div>
-                            <span class="text-sm font-medium mt-1">Relationship</span>
-                        </div>
-                        <div class="step-indicator" data-step="4">
-                            <div class="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold">4</div>
-                            <span class="text-sm font-medium mt-1">Analysis</span>
+            <!-- Step 1: Setup (existing UI) -->
+            <div id="step-setup" class="step-section">
+                <div id="relationshipSetupContainer" class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg text-center">
+                    <h3 class="text-2xl font-bold mb-4">Setup Your Assessment</h3>
+                    <div class="mb-6">
+                        <label for="peerCount" class="block text-lg font-medium text-gray-700 mb-2">How many peers are you assessing?</label>
+                        <select id="peerCount" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm">
+                            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+                        </select>
+                    </div>
+                    <div id="peerNameInputs" class="space-y-4 mb-8"></div>
+                    <button id="startRelationshipAssessmentBtn" class="hibob-btn btn-relationship">Start Assessment</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Assessment (Tabs per Person) -->
+            <div id="step-assessment" class="step-section hidden">
+                <div class="mb-6">
+                    <div class="flex space-x-2 border-b border-gray-200">
+                        <!-- Tabs for each person -->
+                        <template id="person-tab-template">
+                            <button class="tab-btn px-4 py-2 font-semibold text-gray-600 border-b-2 border-transparent focus:outline-none"></button>
+                        </template>
+                        <div id="person-tabs"></div>
+                    </div>
+                </div>
+                <div id="person-assessment-cards">
+                    <!-- Cards for each person, only one visible at a time -->
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button id="assessment-prev-btn" class="hibob-btn btn-reset">Previous</button>
+                    <button id="assessment-next-btn" class="hibob-btn btn-relationship">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Results -->
+            <div id="step-results" class="step-section hidden">
+                <div id="results-summary" class="mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Assessment Results</h2>
+                    <p class="text-gray-600 text-sm mb-4">You assessed <span id="results-peer-count"></span> partnership(s) across relationship, work style, and interaction style dimensions.</p>
+                </div>
+                <div id="results-matrix-all" class="mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Relationship Matrix Overview</h2>
+                    <div class="w-full flex justify-center mb-4">
+                        <canvas id="matrixChart-all" style="max-width: 600px; width: 100%; height: 400px;"></canvas>
+                    </div>
+                    <div class="w-full">
+                        <div class="bg-white rounded-xl shadow-md border border-gray-200/80 p-6 mx-auto" style="max-width: 700px;">
+                            <h3 class="text-lg font-bold mb-4">Quadrant Meanings</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full" style="background:rgb(230,0,126)"></span><span class="font-semibold text-hibob-pink">Anarchy</span><span class="text-xs text-gray-500">— High skills/alignment, low trust. Great potential, but trust must be built for success.</span></div>
+                                <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full" style="background:rgb(34,197,94)"></span><span class="font-semibold text-green-500">Synergy</span><span class="text-xs text-gray-500">— High trust and high skills/alignment. Ideal partnership for high performance.</span></div>
+                                <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full" style="background:#bbb"></span><span class="font-semibold text-gray-400">Apathy</span><span class="text-xs text-gray-500">— Low trust and low skills/alignment. Partnership needs significant attention.</span></div>
+                                <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full" style="background:#f59e42"></span><span class="font-semibold" style="color:#f59e42">Energy</span><span class="text-xs text-gray-500">— High trust, low skills/alignment. Good relationship, but need to align on goals and skills.</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Step 1: Setup Screen -->
-            <div id="step1Setup" class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg text-center">
-                <h3 class="text-2xl font-bold mb-4">Setup Your Assessment</h3>
-                <p class="text-gray-600 mb-6">As a Sales Engineer, assess your working relationships with Account Executives to improve collaboration and results.</p>
-                <div class="mb-6">
-                    <label for="aeCount" class="block text-lg font-medium text-gray-700 mb-2">How many AEs are you assessing?</label>
-                    <select id="aeCount" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm">
-                        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-                    </select>
+                <div id="results-tabs" class="mb-4 flex flex-wrap gap-2"></div>
+                <div id="results-people"></div>
+                <div id="results-explainers">
+                    <!-- Explainers and action items for each person -->
                 </div>
-                <div id="aeNameInputs" class="space-y-4 mb-8"></div>
-                <button id="startPersonalityAssessmentBtn" class="hibob-btn btn-relationship">Continue to Personality Assessment</button>
-            </div>
-
-            <!-- Step 2: Personality Assessment -->
-            <div id="step2Personality" class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg hidden">
-                <h3 class="text-2xl font-bold mb-6 text-center">Personality Assessment</h3>
-                <p class="text-gray-600 mb-8 text-center">Understanding your AE's communication style will help you adapt your approach for better collaboration.</p>
-                <div id="personalityAssessmentContainer"></div>
-                <div class="text-center mt-8">
-                    <button id="backToSetupBtn" class="hibob-btn btn-reset mr-4">Back</button>
-                    <button id="continueToRelationshipBtn" class="hibob-btn btn-relationship">Continue to Relationship Assessment</button>
+                <div class="flex justify-end mt-8">
+                    <button id="results-back-btn" class="hibob-btn btn-reset">Back</button>
                 </div>
-            </div>
-
-            <!-- Step 3: Relationship Assessment -->
-            <div id="step3Relationship" class="max-w-4xl mx-auto hidden">
-                <h3 class="text-2xl font-bold mb-6 text-center">Relationship Assessment</h3>
-                <p class="text-gray-600 mb-8 text-center">Rate your working relationship with each AE across key dimensions of trust and collaboration.</p>
-                <div id="aeTabsContainer" class="border-b border-gray-200 mb-6"></div>
-                <div id="aeCardsContainer"></div>
-                <div class="text-center my-10">
-                    <button id="backToPersonalityBtn" class="hibob-btn btn-reset mr-4">Back</button>
-                    <button id="submitBtn" class="hibob-btn btn-relationship">Show Analysis</button>
-                    <p id="feedbackMsg" class="text-red-500 mt-4 hidden">Please rate all skills to see your analysis.</p>
-                </div>
-            </div>
-
-            <!-- Questions are dynamically inserted here before analysis -->
-            <div id="initialQuestionsContainer">
-                <div id="aeTabsContainer" class="border-b border-gray-200 mb-6"></div>
-                <div id="aeCardsContainer"></div>
             </div>
 
             <!-- Action Buttons -->
@@ -166,7 +207,7 @@
                 <div id="pdfHeader" class="hidden">
                     <div class="text-center p-8 bg-white rounded-t-2xl border-b-4 border-pink-500">
                          <h1 class="text-4xl font-extrabold tracking-tight">Strategic Partnership Report</h1>
-                         <p class="mt-2 text-gray-600">This report provides a comprehensive analysis of your AE/SE partnerships, blending quantitative assessment with strategic polarity mapping to identify actionable growth opportunities.</p>
+                         <p class="mt-2 text-gray-600">This report provides a comprehensive analysis of your peer/colleague partnerships, blending quantitative assessment with strategic polarity mapping to identify actionable growth opportunities.</p>
                     </div>
                 </div>
 
@@ -183,7 +224,7 @@
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                         <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200/80 flex flex-col">
-                            <h2 class="text-2xl font-bold text-center mb-2">AE Relationship Matrix</h2>
+                            <h2 class="text-2xl font-bold text-center mb-2">Relationship Matrix</h2>
                             <div class="chart-container flex-grow"><canvas id="skillRadarChart"></canvas></div>
                         </div>
                         <div id="analysisTextContainer" class="bg-white rounded-2xl shadow-xl p-6 border border-gray-200/80">
@@ -202,641 +243,1260 @@
     </div>
 
 <script>
+// --- State ---
+let currentStep = 1;
+let people = [];
+let assessmentData = {};
+let currentPersonIdx = 0;
+
+// --- Render Peer Name Inputs ---
+function renderPeerNameInputs() {
+  const count = parseInt(document.getElementById('peerCount').value, 10);
+  const container = document.getElementById('peerNameInputs');
+  container.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <input
+        type="text"
+        class="peer-name-setup-input w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-pink-500 focus:border-pink-500"
+        placeholder="Enter name for peer #${i + 1}"
+      />
+    `;
+    container.appendChild(div);
+  }
+}
+
+// --- Step Navigation ---
+function showStep(step) {
+  document.querySelectorAll('.step-section').forEach((el, i) => {
+    el.classList.toggle('hidden', i !== step - 1);
+  });
+  // Update stepper UI
+  const steps = [
+    document.getElementById('stepper-setup'),
+    document.getElementById('stepper-assessment'),
+    document.getElementById('stepper-results')
+  ];
+  steps.forEach((stepEl, idx) => {
+    const span = stepEl.querySelector('span');
+    if (step === idx + 1) {
+      span.className = 'block p-2 rounded-full active-step mx-auto mb-1';
+    } else {
+      span.className = 'block p-2 rounded-full inactive-step mx-auto mb-1';
+    }
+  });
+  currentStep = step;
+}
+
+// --- Render Person Tabs and Cards ---
+function renderPersonTabsAndCards() {
+  const tabsContainer = document.getElementById('person-tabs');
+  const cardsContainer = document.getElementById('person-assessment-cards');
+  tabsContainer.innerHTML = '';
+  cardsContainer.innerHTML = '';
+  people.forEach((name, idx) => {
+    // Tab
+    const tab = document.createElement('button');
+    tab.className = 'tab-btn px-4 py-2 font-semibold text-gray-600 border-b-2 border-transparent focus:outline-none' + (idx === currentPersonIdx ? ' active border-hibob-pink text-hibob-pink' : '');
+    tab.textContent = name;
+    tab.onclick = () => {
+      currentPersonIdx = idx;
+      renderPersonTabsAndCards();
+    };
+    tabsContainer.appendChild(tab);
+    // Card
+    const card = document.createElement('div');
+    card.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-200/50' + (idx === currentPersonIdx ? '' : ' hidden');
+    card.innerHTML = `
+      <!-- Relationship Matrix -->
+      <div class="mb-8">
+        <h4 class="font-semibold mb-4 text-lg">Relationship Matrix</h4>
+        <div class="space-y-4">
+          ${renderRelationshipRow('Mutual Trust', 'We mutually believe in each other\'s honesty, reliability, and competence.', 'trust', idx)}
+          ${renderRelationshipRow('Reliable Backup', 'I trust ' + name + ' to represent our solution accurately, and they trust me to handle technical aspects flawlessly.', 'reliable_backup', idx)}
+          ${renderRelationshipRow('Open Communication', 'We can have open, honest conversations about deal strategy, even when we disagree.', 'communication', idx)}
+          ${renderRelationshipRow('Shared Goals', 'We have a clear and shared understanding of the common objective we need to achieve on our deals.', 'goals', idx)}
+          ${renderRelationshipRow('Collaboration', 'We effectively apply our individual skills and knowledge to serve our common goal.', 'collaboration', idx)}
+          ${renderRelationshipRow('Strategic Planning', 'We strategically plan our joint activities (demos, meetings, follow-ups) to maximize our impact.', 'strategic_planning', idx)}
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <!-- Work Style Preferences -->
+      <div class="mb-8">
+        <h4 class="font-semibold mb-4 text-lg">Work Style Preferences</h4>
+        <p class="text-sm text-gray-600 mb-4">Understanding how ${name} approaches work and decision-making helps identify potential synergies and challenges in your partnership.</p>
+        <div class="space-y-6">
+          <div class="border border-gray-200 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-3">How does ${name} typically make decisions?</label>
+            <div class="flex space-x-4">
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="decision-${idx}" value="analytical" class="polarity-radio mr-2" data-person="${idx}" data-category="decision">
+                <div>
+                  <span class="text-xs text-gray-600">Gathers data, analyzes options systematically, makes evidence-based decisions.</span><br>
+                  <span class="text-xs italic text-gray-400">Example: "Before making a recommendation, reviews all available sales metrics and customer feedback."</span>
+                </div>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="decision-${idx}" value="intuitive" class="polarity-radio mr-2" data-person="${idx}" data-category="decision">
+                <div>
+                  <span class="text-xs text-gray-600">Relies on gut instinct, experience, makes quick decisions based on feel.</span><br>
+                  <span class="text-xs italic text-gray-400">Example: "Quickly decides to pursue a lead based on a strong hunch from past deals."</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-3">How does ${name} prefer to communicate?</label>
+            <div class="flex space-x-4">
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="comm-${idx}" value="direct" class="polarity-radio mr-2" data-person="${idx}" data-category="communication">
+                <div>
+                  <span class="text-xs text-gray-600">Straightforward, to-the-point, prefers clear and concise communication.</span><br>
+                  <span class="text-xs italic text-gray-400">Example: "Sends brief, direct emails outlining next steps."</span>
+                </div>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="comm-${idx}" value="diplomatic" class="polarity-radio mr-2" data-person="${idx}" data-category="communication">
+                <div>
+                  <span class="text-xs text-gray-600">Considerate of feelings, builds relationships, uses tactful communication.</span><br>
+                  <span class="text-xs italic text-gray-400">Example: "Carefully words feedback to maintain a positive team atmosphere."</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-3">What is ${name}'s typical work pace?</label>
+            <div class="flex space-x-4">
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="pace-${idx}" value="fast" class="polarity-radio mr-2" data-person="${idx}" data-category="pace">
+                <div>
+                  <span class="text-xs text-gray-600">Moves quickly, prefers rapid execution, gets results fast.</span><br>
+                  <span class="text-xs italic text-gray-400">Example: "Completes follow-up tasks immediately after meetings."</span>
+                </div>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="pace-${idx}" value="deliberate" class="polarity-radio mr-2" data-person="${idx}" data-category="pace">
+                <div>
+                  <span class="text-xs text-gray-600">Takes time to be thorough, methodical, ensures quality.</span><br>
+                  <span class="text-xs italic text-gray-400">Example: "Double-checks all details before sending proposals to clients."</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-3">How does ${name} approach risk and change?</label>
+            <div class="flex space-x-4">
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="risk-${idx}" value="high" class="polarity-radio mr-2" data-person="${idx}" data-category="risk">
+                <div>
+                  <span class="text-xs text-gray-600">Embraces innovation, experiments with new approaches, comfortable with uncertainty.</span><br>
+                  <span class="text-xs italic text-gray-400">Example: "Volunteers to pilot a new sales strategy with an important client."</span>
+                </div>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50">
+                <input type="radio" name="risk-${idx}" value="low" class="polarity-radio mr-2" data-person="${idx}" data-category="risk">
+                <div>
+                  <span class="text-xs text-gray-600">Prefers proven methods, established processes, conservative approaches.</span><br>
+                  <span class="text-xs italic text-gray-400">Example: "Sticks to tried-and-true demo scripts for every presentation."</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <!-- Interaction Style Questions -->
+      <div class="mb-8">
+        <h4 class="font-semibold mb-4 text-lg">Interaction Style</h4>
+        <p class="text-sm text-gray-600 mb-4">Answer these questions about how ${name} typically behaves in work situations.</p>
+        <div class="space-y-6">
+          <div class="border border-gray-200 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-3">When working on projects, ${name} typically:</label>
+            <div class="space-y-2">
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-1-${idx}" value="analytical" class="interaction-radio mr-2" data-person="${idx}" data-question="1">
+                <span class="text-xs text-gray-600">Focuses on gathering detailed information and analyzing all options before proceeding</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-1-${idx}" value="driving" class="interaction-radio mr-2" data-person="${idx}" data-question="1">
+                <span class="text-xs text-gray-600">Moves quickly to action and focuses on getting results efficiently</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-1-${idx}" value="amiable" class="interaction-radio mr-2" data-person="${idx}" data-question="1">
+                <span class="text-xs text-gray-600">Ensures everyone is comfortable and builds consensus before moving forward</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-1-${idx}" value="expressive" class="interaction-radio mr-2" data-person="${idx}" data-question="1">
+                <span class="text-xs text-gray-600">Generates creative ideas and energizes the team with enthusiasm</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-3">In meetings, ${name} usually:</label>
+            <div class="space-y-2">
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-2-${idx}" value="analytical" class="interaction-radio mr-2" data-person="${idx}" data-question="2">
+                <span class="text-xs text-gray-600">Asks detailed questions and wants to see data to support decisions</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-2-${idx}" value="driving" class="interaction-radio mr-2" data-person="${idx}" data-question="2">
+                <span class="text-xs text-gray-600">Pushes for quick decisions and focuses on action items and deadlines</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-2-${idx}" value="amiable" class="interaction-radio mr-2" data-person="${idx}" data-question="2">
+                <span class="text-xs text-gray-600">Listens to everyone's input and helps resolve conflicts diplomatically</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-2-${idx}" value="expressive" class="interaction-radio mr-2" data-person="${idx}" data-question="2">
+                <span class="text-xs text-gray-600">Shares ideas enthusiastically and helps create an engaging atmosphere</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg p-4">
+            <label class="block text-sm font-medium mb-3">When facing challenges, ${name} tends to:</label>
+            <div class="space-y-2">
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-3-${idx}" value="analytical" class="interaction-radio mr-2" data-person="${idx}" data-question="3">
+                <span class="text-xs text-gray-600">Research the problem thoroughly and develop a systematic solution</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-3-${idx}" value="driving" class="interaction-radio mr-2" data-person="${idx}" data-question="3">
+                <span class="text-xs text-gray-600">Take immediate action and push through obstacles to get results</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-3-${idx}" value="amiable" class="interaction-radio mr-2" data-person="${idx}" data-question="3">
+                <span class="text-xs text-gray-600">Seek input from others and work collaboratively to find a solution</span>
+              </label>
+              <label class="flex-1 border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 flex items-center mb-2">
+                <input type="radio" name="interaction-3-${idx}" value="expressive" class="interaction-radio mr-2" data-person="${idx}" data-question="3">
+                <span class="text-xs text-gray-600">Generate creative alternatives and motivate others to tackle the challenge</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    cardsContainer.appendChild(card);
+  });
+  // Add event listeners for star ratings
+  document.querySelectorAll('.star-rating').forEach(starRow => {
+    const person = starRow.dataset.person;
+    const category = starRow.dataset.category;
+    const stars = starRow.querySelectorAll('.star');
+    stars.forEach((star, i) => {
+      star.addEventListener('click', function() {
+        // Set rating
+        if (!assessmentData[person]) assessmentData[person] = {};
+        if (!assessmentData[person].relationship) assessmentData[person].relationship = {};
+        assessmentData[person].relationship[category] = i + 1;
+        // Update UI
+        stars.forEach((s, idx) => {
+          if (idx <= i) {
+            s.classList.add('selected');
+          } else {
+            s.classList.remove('selected');
+          }
+        });
+      });
+      // Fill stars if already rated
+      if (
+        assessmentData[person] &&
+        assessmentData[person].relationship &&
+        assessmentData[person].relationship[category] >= i + 1
+      ) {
+        star.classList.add('selected');
+      } else {
+        star.classList.remove('selected');
+      }
+    });
+  });
+  
+  // Add event listeners for polarity radios
+  document.querySelectorAll('.polarity-radio').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const person = this.dataset.person;
+      const category = this.dataset.category;
+      const value = this.value;
+      
+      if (!assessmentData[person]) assessmentData[person] = {};
+      if (!assessmentData[person].polarity) assessmentData[person].polarity = {};
+      assessmentData[person].polarity[category] = value;
+    });
+  });
+  
+  // Add event listeners for interaction style radios
+  document.querySelectorAll('.interaction-radio').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const person = this.dataset.person;
+      const question = this.dataset.question;
+      const value = this.value;
+      
+      if (!assessmentData[person]) assessmentData[person] = {};
+      if (!assessmentData[person].interaction) assessmentData[person].interaction = {};
+      assessmentData[person].interaction[question] = value;
+      
+      // Determine the most common interaction style from the answers
+      const answers = assessmentData[person].interaction;
+      const styleCounts = { analytical: 0, driving: 0, amiable: 0, expressive: 0 };
+      
+      Object.values(answers).forEach(style => {
+        styleCounts[style]++;
+      });
+      
+      // Find the most common style
+      const dominantStyle = Object.keys(styleCounts).reduce((a, b) => 
+        styleCounts[a] > styleCounts[b] ? a : b
+      );
+      
+      assessmentData[person].socialStyle = dominantStyle;
+    });
+  });
+  updateAssessmentNextButtonState();
+}
+
+// Helper to render a relationship row with stars
+function renderRelationshipRow(label, desc, category, idx) {
+  return `
+    <div class="flex items-center justify-between py-2">
+      <div class="text-sm font-medium text-gray-700" style="min-width:220px;">
+        ${label}: <span class="italic text-gray-500 font-normal">"${desc}"</span>
+      </div>
+      <div class="star-rating" data-person="${idx}" data-category="${category}">
+        <button type="button" class="star" aria-label="1 star">&#9734;</button>
+        <button type="button" class="star" aria-label="2 stars">&#9734;</button>
+        <button type="button" class="star" aria-label="3 stars">&#9734;</button>
+        <button type="button" class="star" aria-label="4 stars">&#9734;</button>
+        <button type="button" class="star" aria-label="5 stars">&#9734;</button>
+      </div>
+    </div>
+  `;
+}
+
+// --- Next Button Logic ---
+function updateAssessmentNextButtonState() {
+  const nextBtn = document.getElementById('assessment-next-btn');
+  const person = currentPersonIdx;
+  // Check if all questions are answered for this person
+  let allAnswered = true;
+  // Relationship: 6 categories
+  const rel = assessmentData[person]?.relationship || {};
+  const relAnswered = ['trust','reliable_backup','communication','goals','collaboration','strategic_planning'].every(k => rel[k] && rel[k] > 0);
+  // Polarity: 4
+  const pol = assessmentData[person]?.polarity || {};
+  const polAnswered = ['decision','communication','pace','risk'].every(k => pol[k]);
+  // Interaction: 3
+  const inter = assessmentData[person]?.interaction || {};
+  const interAnswered = ['1','2','3'].every(k => inter[k]);
+  allAnswered = relAnswered && polAnswered && interAnswered;
+  nextBtn.disabled = !allAnswered;
+  // Update button text
+  if (currentPersonIdx < people.length - 1) {
+    nextBtn.textContent = 'Next';
+  } else {
+    nextBtn.textContent = allAnswered ? 'See Results' : 'See Results';
+  }
+}
+
+// --- Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DATA STRUCTURE ---
-    const assessmentData = {
-        questions: [
-            { axis: 'trust', title: "Mutual Trust", question: "We mutually believe in each other's honesty, reliability, and competence." },
-            { axis: 'trust', title: "Reliable Backup", question: "I trust my AE to represent our solution accurately, and they trust me to handle technical aspects flawlessly." },
-            { axis: 'trust', title: "Open Communication", question: "We can have open, honest conversations about deal strategy, even when we disagree." },
-            { axis: 'skills', title: "Aligned Objective", question: "We have a clear and shared understanding of the common objective we need to achieve on our deals." },
-            { axis: 'skills', title: "Effective Collaboration", question: "We effectively apply our individual skills and knowledge to serve our common goal." },
-            { axis: 'skills', title: "Strategic Planning", question: "We strategically plan our joint activities (demos, meetings, follow-ups) to maximize our impact." }
-        ],
-        socialStyles: {
-            analytical: {
-                name: "Analytical",
-                description: "Focus on facts & logic, listens critically, acts when payoff is clear",
-                characteristics: {
-                    assertiveness: "ASK-directed",
-                    responsiveness: "TASK-focused",
-                    need: "to be right",
-                    orientation: "thinking",
-                    growth: "to declare",
-                    backup: "avoid"
-                },
-                strengths: ["Detail-oriented", "Logical thinking", "Thorough analysis", "Reliable execution"],
-                challenges: ["Can be slow to decide", "May over-analyze", "Can seem cold or distant"],
-                communicationStyle: "Speaks directly and often pauses, seldom interrupts, asks more questions, tends to lean back"
-            },
-            driving: {
-                name: "Driving",
-                description: "Straightforward & concise, takes charge, action-oriented",
-                characteristics: {
-                    assertiveness: "TELL-directed",
-                    responsiveness: "TASK-focused",
-                    need: "results",
-                    orientation: "action",
-                    growth: "to listen",
-                    backup: "autocratic"
-                },
-                strengths: ["Quick decision making", "Results-focused", "Direct communication", "High energy"],
-                challenges: ["Can be impatient", "May overlook feelings", "Can be too aggressive"],
-                communicationStyle: "Speaks quickly and firmly, often interrupts, makes declarative statements, tends to lean forward"
-            },
-            amiable: {
-                name: "Amiable",
-                description: "Friendly & flexible, cooperates to gain agreement, provides support",
-                characteristics: {
-                    assertiveness: "ASK-directed",
-                    responsiveness: "PEOPLE-focused",
-                    need: "personal security",
-                    orientation: "relationships",
-                    growth: "to initiate",
-                    backup: "acquiesce"
-                },
-                strengths: ["Great team player", "Builds relationships", "Patient listener", "Supportive"],
-                challenges: ["Can avoid conflict", "May be slow to act", "Can be too accommodating"],
-                communicationStyle: "Talks about people and relationships, uses broad gestures, shares feelings, varied facial expressions"
-            },
-            expressive: {
-                name: "Expressive",
-                description: "Creates excitement and involvement, enthusiastic idea generator, dreams and inspires",
-                characteristics: {
-                    assertiveness: "TELL-directed",
-                    responsiveness: "PEOPLE-focused",
-                    need: "personal approval",
-                    orientation: "spontaneity",
-                    growth: "to check",
-                    backup: "attack"
-                },
-                strengths: ["Creative thinking", "Enthusiasm", "Great motivator", "Big picture vision"],
-                challenges: ["Can be disorganized", "May talk too much", "Can be impulsive"],
-                communicationStyle: "Talks about people and relationships, uses broad gestures, often uses voice for emphasis, varied facial expressions"
-            }
-        },
-        socialStyleQuestions: [
-            { 
-                question: "How does your AE typically approach decision-making?",
-                options: [
-                    { text: "Analyzes all the data and facts before deciding", style: "analytical" },
-                    { text: "Makes quick decisions and takes action immediately", style: "driving" },
-                    { text: "Consults with others and seeks consensus", style: "amiable" },
-                    { text: "Goes with gut instinct and enthusiasm", style: "expressive" }
-                ]
-            },
-            {
-                question: "How does your AE prefer to communicate in meetings?",
-                options: [
-                    { text: "Presents detailed facts and logical arguments", style: "analytical" },
-                    { text: "Gets straight to the point and drives the agenda", style: "driving" },
-                    { text: "Listens actively and supports others' ideas", style: "amiable" },
-                    { text: "Shares stories and creates excitement", style: "expressive" }
-                ]
-            },
-            {
-                question: "When under pressure, how does your AE typically respond?",
-                options: [
-                    { text: "Withdraws to analyze the situation thoroughly", style: "analytical" },
-                    { text: "Takes charge and pushes for immediate action", style: "driving" },
-                    { text: "Seeks support and collaboration from others", style: "amiable" },
-                    { text: "Becomes more animated and expressive", style: "expressive" }
-                ]
-            },
-            {
-                question: "How does your AE prefer to receive feedback?",
-                options: [
-                    { text: "With specific data and logical reasoning", style: "analytical" },
-                    { text: "Directly and immediately, focusing on results", style: "driving" },
-                    { text: "Privately and with emotional support", style: "amiable" },
-                    { text: "With enthusiasm and recognition of effort", style: "expressive" }
-                ]
-            }
-        ],
-        polarities: {
-            relationship: {
-                title: "Relationship Polarity: Achieving Mutual Trust",
-                greaterPurposeStatement: "To build a resilient partnership that drives exceptional results and professional growth.",
-                deeperFear: "Becoming adversarial, damaging our careers, and losing deals.",
-                poleA: { name: "Harmony & Support", upsides: "Rapport, Empathy, Encouragement, Psychological Safety", downsides: "Conflict Avoidance, Resentment, Stagnation" },
-                poleB: { name: "Candor & Challenge", upsides: "Better Ideas, Accountability, Deep Respect, Growth", downsides: "Defensiveness, Friction, Competition, Mistrust" }
-            },
-            execution: {
-                title: "Execution Polarity: Achieving High Performance",
-                greaterPurposeStatement: "To consistently win deals and create delighted customers through flawless execution.",
-                deeperFear: "Appearing disorganized and unprofessional, leading to lost deals and a poor reputation.",
-                poleA: { name: "Flexibility & Agility", upsides: "Adaptability, Creativity, Responsiveness, Customer-Centricity", downsides: "Chaos, Inconsistency, Unpredictable Messaging" },
-                poleB: { name: "Structure & Process", upsides: "Consistency, Scalability, Predictability, Clarity", downsides: "Rigidity, Bureaucracy, Missed Opportunities, Slowness" }
-            }
-        },
-        quadrantAnalysis: {
-            synergy: {
-                name: 'Synergy (DUO)', summary: "This is a high-performing, high-trust partnership. The focus is on sustaining this positive dynamic.", polarityFocus: 'sustain',
-                narrative: "You are successfully balancing both the Relationship and Execution polarities. The key is to remain intentional about sustaining this high-performing state.",
-                actionSteps: ["Schedule a quarterly 'Partnership Review' to check in on your polarities. Are you still balancing them well?", "Jointly identify one area for strategic innovation for your top account.", "Celebrate your wins publicly to model a positive AE/SE partnership for others."],
-                earlyWarnings: ["A feeling of 'coasting' or not feeling challenged.", "Skipping planning sessions because 'you've got it covered'."]
-            },
-            energy: {
-                name: 'Energy (Pair)', summary: "There is a strong foundation of trust and harmony, but execution is inconsistent. The partnership feels good, but may not be as effective as it could be.", polarityFocus: 'execution', problemPole: 'poleA',
-                narrative: "Your partnership is over-focusing on <strong class='text-purple-600'>Flexibility & Agility</strong>, leading to the downside of chaos and inconsistency. The strategic action is to move towards the upside of <strong class='text-teal-600'>Structure & Process</strong> to bring predictability to your execution.",
-                actionSteps: ["To get the upside of 'Structure & Process', co-create a simple checklist for deal qualification.", "Jointly agree on a clear 'Rules of Engagement' document for discovery, demos, and follow-ups.", "Before your next major customer meeting, conduct a 15-minute pre-call planning session with a defined agenda."],
-                earlyWarnings: ["Feeling that process is getting in the way of customer needs.", "Spending more time on internal documentation than on selling."]
-            },
-            apathy: {
-                name: 'Apathy (Colleagues)', summary: "There's a lack of engagement on both the relationship and execution fronts. The dynamic is defined by inaction, not active conflict.", polarityFocus: 'engage',
-                narrative: "This partnership lacks energy in both polarities. The first step is to intentionally engage with the positive upsides of either pole to build momentum.",
-                actionSteps: ["To get the upside of 'Harmony & Support', schedule a 15-minute virtual coffee with no agenda other than to connect.", "Ask: 'To help me be a better partner, what's one thing you value in an SE/AE partnership?'", "To get the upside of 'Structure & Process', pick one upcoming opportunity and suggest a 10-minute planning call."],
-                earlyWarnings: ["Be mindful that any new energy is better than none. The risk of 'over-correction' is low at this stage. Focus on building momentum."]
-            },
-            anarchy: {
-                name: 'Anarchy (Competitors)', summary: "This relationship is defined by friction and a lack of trust, likely from an over-focus on challenging each other without a foundation of support.", polarityFocus: 'relationship', problemPole: 'poleB',
-                narrative: "Your current dynamic shows an over-focus on <strong class='text-purple-600'>Candor & Challenge</strong>, leading to the downside of friction and mistrust. To improve this partnership, the strategic movement is towards the upside of <strong class='text-teal-600'>Harmony & Support</strong>.",
-                actionSteps: ["To get the upside of 'Harmony & Support', start your next 1:1 by acknowledging a positive contribution they made.", "Use 'I' statements. Instead of 'You did X wrong,' try 'I felt confused when...'", "Propose a 30-minute meeting to establish 'Rules of Engagement,' focusing on building trust, not just winning the argument. A manager's help might be needed."],
-                earlyWarnings: ["Feeling that you're avoiding important, tough conversations.", "A sense that surface-level politeness is masking unresolved issues."]
-            }
-        }
+  // Step 1: Setup
+  people = [];
+  document.getElementById('startRelationshipAssessmentBtn').onclick = () => {
+    // Collect names
+    const nameInputs = document.querySelectorAll('.peer-name-setup-input');
+    people = Array.from(nameInputs).map(input => input.value.trim() || 'Person');
+    if (people.some(n => !n)) {
+      alert('Please enter all names.');
+      return;
+    }
+    currentPersonIdx = 0;
+    renderPersonTabsAndCards();
+    showStep(2);
+  };
+  // Render initial name inputs
+  renderPeerNameInputs();
+  // Update name inputs when peer count changes
+  document.getElementById('peerCount').addEventListener('change', renderPeerNameInputs);
+  // Step 2: Assessment navigation
+  document.getElementById('assessment-prev-btn').onclick = () => {
+    showStep(1);
+  };
+  document.getElementById('assessment-next-btn').onclick = () => {
+    // Only proceed if enabled
+    if (document.getElementById('assessment-next-btn').disabled) return;
+    if (currentPersonIdx < people.length - 1) {
+      currentPersonIdx++;
+      renderPersonTabsAndCards();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      showStep(3);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  // Step 3: Results navigation
+  document.getElementById('results-back-btn').onclick = () => {
+    showStep(2);
+  };
+  // Re-check next button state on any input change
+  document.addEventListener('change', function(e) {
+    if (
+      e.target.classList.contains('star') ||
+      e.target.classList.contains('polarity-radio') ||
+      e.target.classList.contains('interaction-radio')
+    ) {
+      updateAssessmentNextButtonState();
+    }
+  });
+});
+
+function renderResultsPage() {
+  // Summary
+  document.getElementById('results-peer-count').textContent = people.length;
+  // 2x2 matrix for all peers
+  const allMatrixCtx = document.getElementById('matrixChart-all')?.getContext('2d');
+  const peerPoints = people.map((name, idx) => {
+    const rel = (assessmentData[idx] || {}).relationship || {};
+    return {
+      name,
+      trust: ((rel.trust || 0) + (rel.reliable_backup || 0) + (rel.communication || 0)) / 3,
+      skills: ((rel.goals || 0) + (rel.collaboration || 0) + (rel.strategic_planning || 0)) / 3
     };
-
-    // --- DOM Elements ---
-    const progressIndicator = document.getElementById('progressIndicator');
-    const step1Setup = document.getElementById('step1Setup');
-    const step2Personality = document.getElementById('step2Personality');
-    const step3Relationship = document.getElementById('step3Relationship');
-    const personalityAssessmentContainer = document.getElementById('personalityAssessmentContainer');
-    const aeTabsContainer = document.getElementById('aeTabsContainer');
-    const aeCardsContainer = document.getElementById('aeCardsContainer');
-    const skillLevelsReportContainer = document.getElementById('skillLevelsReportContainer');
-    const aeCountSelect = document.getElementById('aeCount');
-    const aeNameInputsContainer = document.getElementById('aeNameInputs');
-    const startPersonalityAssessmentBtn = document.getElementById('startPersonalityAssessmentBtn');
-    const backToSetupBtn = document.getElementById('backToSetupBtn');
-    const continueToRelationshipBtn = document.getElementById('continueToRelationshipBtn');
-    const backToPersonalityBtn = document.getElementById('backToPersonalityBtn');
-    const ctx = document.getElementById('skillRadarChart').getContext('2d');
-    const analysisSection = document.getElementById('analysisSection');
-    const analysisContainer = document.getElementById('relationshipAnalysisText');
-    const submitBtn = document.getElementById('submitBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const feedbackMsg = document.getElementById('feedbackMsg');
-    const downloadButtonContainer = document.getElementById('downloadButtonContainer');
-    const pdfHeader = document.getElementById('pdfHeader');
-    const polarityExplainerSection = document.getElementById('polarityExplainerSection');
-
-    // --- State & Chart Variables ---
-    let scores = {};
-    let personalityScores = {};
-    let skillChart;
-    let currentStep = 1;
-
-    // --- Core Functions ---
-    const initializeChart = () => {
-        if (skillChart) skillChart.destroy();
-        const config = {
-            type: 'scatter', data: { datasets: [] },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                scales: {
-                    x: { title: { display: true, text: 'Trust Score', font: { size: 14, weight: 'bold' } }, min: 0, max: 5 },
-                    y: { title: { display: true, text: 'Skills & Alignment Score', font: { size: 14, weight: 'bold' } }, min: 0, max: 5 }
-                },
-                plugins: {
-                    legend: { position: 'top' },
-                    annotation: { annotations: {
-                        line1: { type: 'line', xMin: 2.5, xMax: 2.5, yMin: 0, yMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
-                        line2: { type: 'line', yMin: 2.5, yMax: 2.5, xMin: 0, xMax: 5, borderColor: 'rgba(0,0,0,0.2)', borderDash: [6, 6], borderWidth: 2 },
-                        synergy: { type: 'label', xValue: 3.75, yValue: 3.75, content: 'Synergy', font: {size: 16, weight: 'bold'}, color: 'rgba(40, 167, 69, 0.5)' },
-                        energy: { type: 'label', xValue: 3.75, yValue: 1.25, content: 'Energy', font: {size: 16, weight: 'bold'}, color: 'rgba(255, 193, 7, 0.5)' },
-                        apathy: { type: 'label', xValue: 1.25, yValue: 1.25, content: 'Apathy', font: {size: 16, weight: 'bold'}, color: 'rgba(108, 117, 125, 0.5)' },
-                        anarchy: { type: 'label', xValue: 1.25, yValue: 3.75, content: 'Anarchy', font: {size: 16, weight: 'bold'}, color: 'rgba(220, 53, 69, 0.5)' }
-                    }}
-                }
+  });
+  // Color palette for matrix points (legend)
+  const matrixColors = [
+    'rgb(230,0,126)', // hibob pink
+    'rgb(34,197,94)', // green
+    'rgb(59,130,246)', // blue
+    'rgb(245,158,66)', // orange
+    'rgb(168,85,247)' // purple
+  ];
+  // Pastel color palette for points
+  const matrixPastels = [
+    '#f9b4d2', // pastel pink
+    '#b4f9c6', // pastel green
+    '#b4d8f9', // pastel blue
+    '#fae0b4', // pastel orange
+    '#d6b4f9'  // pastel purple
+  ];
+  // --- FIX: Destroy previous chart instance if exists ---
+  if (window.matrixChartInstance) {
+    window.matrixChartInstance.destroy();
+  }
+  if (allMatrixCtx) {
+    window.matrixChartInstance = new Chart(allMatrixCtx, {
+      type: 'scatter',
+      data: {
+        datasets: peerPoints.map((p, i) => ({
+          label: p.name,
+          data: [{ x: p.trust, y: p.skills }],
+          backgroundColor: matrixPastels[i % matrixPastels.length], // pastel for point
+          borderColor: matrixColors[i % matrixColors.length], // strong color for legend
+          pointRadius: 11,
+          pointBorderWidth: 3
+        }))
+      },
+      options: {
+        responsive: false,
+        plugins: {
+          legend: { display: true, position: 'top' },
+          annotation: {
+            annotations: {
+              vline: {
+                type: 'line',
+                xMin: 2.5,
+                xMax: 2.5,
+                borderColor: '#bbb',
+                borderWidth: 2,
+                borderDash: [6,6]
+              },
+              hline: {
+                type: 'line',
+                yMin: 2.5,
+                yMax: 2.5,
+                borderColor: '#bbb',
+                borderWidth: 2,
+                borderDash: [6,6]
+              },
+              anarchy: {
+                type: 'label',
+                xValue: 0.7,
+                yValue: 4.3,
+                backgroundColor: 'rgba(0,0,0,0)',
+                color: 'rgb(230,0,126)',
+                font: { size: 18, weight: 'bold' },
+                content: ['Anarchy'],
+                rotation: 0
+              },
+              synergy: {
+                type: 'label',
+                xValue: 4.1,
+                yValue: 4.3,
+                backgroundColor: 'rgba(0,0,0,0)',
+                color: 'rgb(34,197,94)',
+                font: { size: 18, weight: 'bold' },
+                content: ['Synergy'],
+                rotation: 0
+              },
+              apathy: {
+                type: 'label',
+                xValue: 0.7,
+                yValue: 0.7,
+                backgroundColor: 'rgba(0,0,0,0)',
+                color: '#bbb',
+                font: { size: 18, weight: 'bold' },
+                content: ['Apathy'],
+                rotation: 0
+              },
+              energy: {
+                type: 'label',
+                xValue: 4.1,
+                yValue: 0.7,
+                backgroundColor: 'rgba(0,0,0,0)',
+                color: '#f59e42',
+                font: { size: 18, weight: 'bold' },
+                content: ['Energy'],
+                rotation: 0
+              }
             }
+          }
+        },
+        scales: {
+          x: {
+            min: 0, max: 5,
+            title: { display: true, text: 'Trust Score', font: { weight: 'bold', size: 15 } },
+            grid: { color: '#eee' },
+            ticks: { stepSize: 1, color: '#888', font: { size: 12 } }
+          },
+          y: {
+            min: 0, max: 5,
+            title: { display: true, text: 'Skills & Alignment Score', font: { weight: 'bold', size: 15 } },
+            grid: { color: '#eee' },
+            ticks: { stepSize: 1, color: '#888', font: { size: 12 } }
+          }
+        }
+      }
+    });
+  }
+  // Tabs for peer details
+  const tabsContainer = document.getElementById('results-tabs');
+  tabsContainer.innerHTML = '';
+  people.forEach((name, idx) => {
+    const tab = document.createElement('button');
+    tab.className = 'px-4 py-2 rounded-lg font-semibold ' + (idx === 0 ? 'bg-pink-100 text-hibob-pink' : 'bg-gray-100 text-gray-600');
+    tab.textContent = name;
+    tab.onclick = () => renderPeerDetail(idx);
+    tabsContainer.appendChild(tab);
+  });
+  // Render first peer by default
+  renderPeerDetail(0);
+
+  // Attach PDF download event listener after rendering button
+  const pdfBtn = document.getElementById('results-download-btn');
+  if (pdfBtn) {
+    pdfBtn.onclick = async function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let y = 40;
+      // Executive Summary Title
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Strategic Partnership Assessment', pageWidth / 2, y, { align: 'center' });
+      y += 30;
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, pageWidth - 60, 40, { align: 'right' });
+      y += 10;
+      // Executive Summary (expanded)
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Executive Summary', 60, y);
+      y += 18;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      const summaryText = `You assessed ${people.length} partnership(s) across relationship, work style, and interaction style dimensions. This report provides a comprehensive analysis of your peer/colleague partnerships, blending quantitative assessment with strategic polarity mapping to identify actionable growth opportunities. The matrix below shows the overall relationship landscape, with each peer plotted by trust and skills/alignment.`;
+      const summaryLines = doc.splitTextToSize(summaryText, pageWidth - 120);
+      doc.text(summaryLines, 60, y);
+      y += summaryLines.length * 15 + 10;
+      // Matrix chart as image
+      const matrixCanvas = document.getElementById('matrixChart-all');
+      const matrixImg = await html2canvas(matrixCanvas, { backgroundColor: null }).then(canvas => canvas.toDataURL('image/png'));
+      doc.addImage(matrixImg, 'PNG', 60, y, pageWidth - 120, (pageWidth - 120) * 0.7);
+      y += (pageWidth - 120) * 0.7 + 20;
+      // Quadrant meanings
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Quadrant Meanings', 60, y);
+      y += 18;
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      const quadrantLines = [
+        ['Anarchy', 'High skills/alignment, low trust. Great potential, but trust must be built for success.'],
+        ['Synergy', 'High trust and high skills/alignment. Ideal partnership for high performance.'],
+        ['Apathy', 'Low trust and low skills/alignment. Partnership needs significant attention.'],
+        ['Energy', 'High trust, low skills/alignment. Good relationship, but need to align on goals and skills.']
+      ];
+      const quadrantColors = ['#e6007e', '#22c55e', '#bbb', '#f59e42'];
+      quadrantLines.forEach(([label, desc], i) => {
+        doc.setTextColor(quadrantColors[i]);
+        doc.setFont('helvetica', 'bold');
+        doc.text(label, 70, y);
+        doc.setTextColor('#444');
+        doc.setFont('helvetica', 'normal');
+        doc.text(desc, 130, y);
+        y += 18;
+      });
+      // Per-person pages
+      people.forEach((name, idx) => {
+        doc.addPage();
+        let py = 60;
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text(name, 60, py);
+        py += 24;
+        // Relationship Matrix
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Relationship Matrix', 60, py);
+        py += 18;
+        doc.setFont('helvetica', 'normal');
+        const rel = (assessmentData[idx] || {}).relationship || {};
+        const relRows = [
+          { label: 'Mutual Trust', key: 'trust', icon: '🤝' },
+          { label: 'Reliable Backup', key: 'reliable_backup', icon: '🛡️' },
+          { label: 'Open Communication', key: 'communication', icon: '💬' },
+          { label: 'Shared Goals', key: 'goals', icon: '🎯' },
+          { label: 'Collaboration', key: 'collaboration', icon: '🤲' },
+          { label: 'Strategic Planning', key: 'strategic_planning', icon: '🗺️' }
+        ];
+        relRows.forEach(row => {
+          doc.text(`${row.icon} ${row.label}: ${rel[row.key] || '-'}/5`, 80, py);
+          py += 15;
+        });
+        py += 12;
+        // Work Style
+        doc.setFont('helvetica', 'bold');
+        doc.text('Work Style Preferences', 60, py);
+        py += 18;
+        doc.setFont('helvetica', 'normal');
+        const pol = (assessmentData[idx] || {}).polarity || {};
+        const polRows = [
+          { label: 'Decision Making', key: 'decision', map: { analytical: 'Analytical', intuitive: 'Intuitive' }, icon: '🧠', explain: {
+            analytical: 'Analytical decision makers rely on data, logic, and careful analysis. They are thorough, objective, and minimize risk by considering all options. They may take longer to decide, but their choices are well-founded.',
+            intuitive: 'Intuitive decision makers trust their instincts and experience. They are comfortable making quick judgments, even with incomplete information, and often spot patterns others miss. This can lead to creative solutions and rapid progress.'
+          } },
+          { label: 'Communication', key: 'communication', map: { direct: 'Direct', diplomatic: 'Diplomatic' }, icon: '🗣️', explain: {
+            direct: 'Direct communicators are clear and to the point. They value efficiency and transparency, preferring straightforward conversations that get to the heart of the matter quickly. They appreciate when others are equally direct and may become frustrated with overly complex explanations or beating around the bush.',
+            diplomatic: 'Diplomatic communicators are tactful and relationship-focused. They carefully consider how their words will be received and work to maintain harmony in conversations. They excel at navigating sensitive topics and building consensus, though they may sometimes avoid difficult truths to preserve relationships.'
+          } },
+          { label: 'Work Pace', key: 'pace', map: { fast: 'Fast', deliberate: 'Deliberate' }, icon: '⚡', explain: {
+            fast: 'Fast workers move quickly and get results. They thrive on momentum and rapid iteration, often making quick decisions and adjustments as they go. They are highly responsive to changing circumstances and can adapt their approach mid-stream. While they may occasionally miss details, their speed often creates competitive advantages.',
+            deliberate: 'Deliberate workers are thorough and methodical. They take time to consider all angles and ensure quality before moving forward. They prefer to have a clear plan and complete information before acting, which leads to well-thought-out solutions and fewer mistakes. They may move slower initially but often avoid costly rework.'
+          } },
+          { label: 'Risk Approach', key: 'risk', map: { high: 'Embraces Innovation', low: 'Prefers Proven Methods' }, icon: '🎲', explain: {
+            high: 'Embraces innovation and is comfortable with uncertainty. They actively seek out new approaches and are willing to experiment with unproven methods. They see failure as a learning opportunity and are energized by the challenge of solving problems in novel ways. Their willingness to take calculated risks often leads to breakthrough solutions.',
+            low: 'Prefers proven methods and established processes. They value stability and reliability, choosing approaches that have demonstrated success. They are cautious about change and prefer to improve existing systems rather than replace them. While they may miss some opportunities, their conservative approach often prevents costly mistakes.'
+          } }
+        ];
+        polRows.forEach(row => {
+          const val = pol[row.key];
+          if (!val) return;
+          doc.text(`${row.icon} ${row.label}: ${row.map[val]}`, 80, py);
+          py += 13;
+          doc.setFontSize(10);
+          const explLines = doc.splitTextToSize(row.explain[val], pageWidth - 120);
+          doc.text(explLines, 100, py);
+          doc.setFontSize(13);
+          py += explLines.length * 13 + 8;
+        });
+        // Interaction Style
+        py += 4;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Dominant Interaction Style', 60, py);
+        py += 18;
+        doc.setFont('helvetica', 'normal');
+        const style = (assessmentData[idx] || {}).socialStyle || '';
+        const styleMap = {
+          analytical: 'Analytical: Methodical, detail-oriented, values accuracy. Prefers to gather all relevant information before making decisions.',
+          driving: 'Driving: Decisive, results-focused, and thrives on achievement. Quick to make decisions and set ambitious goals.',
+          amiable: 'Amiable: Supportive, cooperative, and values relationships. Works to create harmony and is sensitive to the needs of others.',
+          expressive: 'Expressive: Enthusiastic, creative, and persuasive. Energizes teams with ideas and optimism.'
         };
-        skillChart = new Chart(ctx, config);
-    };
-    
-    const generateGenericPolarityMapHTML = (polarity) => {
-        return `
-            <div class="mt-6 text-center border-t pt-6">
-                <h4 class="font-bold text-xl">${polarity.title}</h4>
-                <p class="text-sm text-gray-500 italic mt-1"><strong>Greater Purpose:</strong> ${polarity.greaterPurposeStatement}</p>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mt-4 text-center">
-                <div class="font-bold text-lg">${polarity.poleA.name}</div>
-                <div class="font-bold text-lg">${polarity.poleB.name}</div>
-                <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                    <h5 class="font-semibold">Upsides (We gain...)</h5><p class="text-sm">${polarity.poleA.upsides}</p>
-                </div>
-                <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                    <h5 class="font-semibold">Upsides (We gain...)</h5><p class="text-sm">${polarity.poleB.upsides}</p>
-                </div>
-                <div class="bg-red-50 p-3 rounded-lg border border-red-200">
-                    <h5 class="font-semibold">Downsides (of over-focusing)</h5><p class="text-sm">${polarity.poleA.downsides}</p>
-                </div>
-                <div class="bg-red-50 p-3 rounded-lg border border-red-200">
-                    <h5 class="font-semibold">Downsides (of over-focusing)</h5><p class="text-sm">${polarity.poleB.downsides}</p>
-                </div>
-            </div>
-            <p class="text-sm text-center text-gray-500 italic mt-4"><strong>Deeper Fear:</strong> ${polarity.deeperFear}</p>
-        `;
-    };
-
-    const renderPolarityExplainer = () => {
-        const matrixExplainerHTML = `
-            <div>
-                <h3 class="text-2xl font-bold text-center mb-4">The Relationship Matrix</h3>
-                <p class="text-center text-gray-600 mb-6">This matrix diagnoses your partnership's current state based on two critical axes: Trust and Skills/Alignment. Your position on the chart reveals the dominant dynamic.</p>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    ${Object.values(assessmentData.quadrantAnalysis).map(q => `
-                        <div class="p-3 rounded-lg bg-gray-50 border">
-                            <p class="font-bold">${q.name}</p>
-                            <p class="text-gray-600">${q.summary}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        const polarityModelHTML = `
-            <div>
-                 <h3 class="text-2xl font-bold text-center mb-4">The Polarity Model</h3>
-                 <p class="text-center mt-2 text-gray-600">Effective partnerships are not about being perfect, but about managing key tensions (polarities). Your results are a reflection of how well you are balancing the two core polarities below.</p>
-                ${generateGenericPolarityMapHTML(assessmentData.polarities.relationship)}
-                ${generateGenericPolarityMapHTML(assessmentData.polarities.execution)}
-            </div>
-        `;
-
-        const explainerHTML = `
-            <div class="bg-white p-8 rounded-2xl shadow-lg mt-8">
-                <div id="explainerTabsContainer" class="border-b border-gray-200 mb-6 flex justify-center">
-                    <button class="explainer-tab-btn active" data-target="matrixExplainer">The Relationship Matrix</button>
-                    <button class="explainer-tab-btn" data-target="polarityExplainer">The Polarity Model</button>
-                </div>
-                <div id="explainerContentContainer">
-                    <div id="matrixExplainer" class="explainer-tab-content active">${matrixExplainerHTML}</div>
-                    <div id="polarityExplainer" class="explainer-tab-content">${polarityModelHTML}</div>
-                </div>
-            </div>
-        `;
-
-        polarityExplainerSection.innerHTML = explainerHTML;
-        polarityExplainerSection.classList.remove('hidden');
-    };
-
-    const showAnalysis = () => {
-        let analysisHTML = '';
-        const datasets = skillChart.data.datasets;
-
-        datasets.forEach((dataset) => {
-            const { aeIndex, label } = dataset;
-            const { x: trust, y: skills } = dataset.data[0];
-            let quadrantKey;
-            if (trust > 2.5 && skills > 2.5) quadrantKey = 'synergy';
-            else if (trust > 2.5 && skills <= 2.5) quadrantKey = 'energy';
-            else if (trust <= 2.5 && skills <= 2.5) quadrantKey = 'apathy';
-            else quadrantKey = 'anarchy';
-            
-            const quadrantInfo = assessmentData.quadrantAnalysis[quadrantKey];
-            const personalityInfo = personalityScores[aeIndex];
-            const styleInfo = assessmentData.socialStyles[personalityInfo.style];
-
-            const personalityInsightsHTML = `
-                <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h4 class="font-bold text-lg text-blue-800 mb-2">Communication Style: ${styleInfo.name}</h4>
-                    <p class="text-sm text-blue-700 mb-3">${styleInfo.description}</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <h5 class="font-semibold text-blue-800">Strengths:</h5>
-                            <ul class="list-disc list-inside text-blue-700">
-                                ${styleInfo.strengths.map(s => `<li>${s}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div>
-                            <h5 class="font-semibold text-blue-800">Adaptation Tips:</h5>
-                            <ul class="list-disc list-inside text-blue-700">
-                                ${styleInfo.challenges.map(c => `<li>${c}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            const actionPlanHTML = `
-                <div class="mt-6 border-t pt-6">
-                    <h4 class="font-bold text-lg text-gray-800">Strategic Narrative & Action Plan</h4>
-                    <p class="text-sm mt-2 text-gray-600">${quadrantInfo.narrative}</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    <div class="bg-gray-100 p-4 rounded-lg"><h5 class="font-bold text-lg text-green-700">Action Steps</h5><ul class="list-disc list-inside mt-2 space-y-2 text-sm">${quadrantInfo.actionSteps.map(s => `<li>${s}</li>`).join('')}</ul></div>
-                    <div class="bg-gray-100 p-4 rounded-lg"><h5 class="font-bold text-lg text-yellow-700">Early Warnings</h5><ul class="list-disc list-inside mt-2 space-y-2 text-sm">${quadrantInfo.earlyWarnings.map(w => `<li>${w}</li>`).join('')}</ul></div>
-                </div>`;
-
-            analysisHTML += `
-                <div class="p-6 rounded-lg" style="background-color: ${dataset.backgroundColor}22;">
-                    <p class="font-bold text-2xl" style="color: ${dataset.backgroundColor};">${label}: <span class="font-medium">${quadrantInfo.name}</span></p>
-                    <p class="mt-2 text-md text-gray-700">${quadrantInfo.summary}</p>
-                    ${personalityInsightsHTML}
-                    ${actionPlanHTML}
-                </div>`;
+        const styleLines = doc.splitTextToSize(styleMap[style] || '-', pageWidth - 120);
+        doc.text(styleLines, 80, py);
+        py += styleLines.length * 13 + 8;
+        // Action Items
+        doc.setFont('helvetica', 'bold');
+        doc.text('Action Items', 60, py);
+        py += 16;
+        doc.setFont('helvetica', 'normal');
+        const actions = [];
+        if ((rel.trust || 0) < 3) actions.push('Schedule a 1:1 coffee chat or informal meeting to build mutual trust. Share a recent success and ask about theirs.');
+        if ((rel.reliable_backup || 0) < 3) actions.push('Clarify roles and responsibilities in your next project. For example, write down who owns which deliverable and review together.');
+        if ((rel.communication || 0) < 3) actions.push('Set up a recurring 15-minute sync to discuss deal strategy and encourage open feedback. Try using a shared doc for agenda and notes.');
+        if ((rel.goals || 0) < 3) actions.push('At your next team meeting, align on a shared goal and write it down. Ask each person to describe what success looks like.');
+        if ((rel.collaboration || 0) < 3) actions.push('Invite your peer to co-lead a client call or demo. Debrief afterwards to discuss what went well and what could improve.');
+        if ((rel.strategic_planning || 0) < 3) actions.push('Plan your next joint activity together, such as a customer workshop. Outline the agenda collaboratively in advance.');
+        if (actions.length === 0) actions.push('Keep up the great partnership! Consider celebrating your success with a team lunch or shoutout.');
+        actions.forEach(a => {
+          doc.setFontSize(11);
+          const actionLines = doc.splitTextToSize(`- ${a}`, pageWidth - 120);
+          doc.text(actionLines, 80, py);
+          py += actionLines.length * 12 + 4;
         });
-        analysisContainer.innerHTML = analysisHTML;
-        
-        analysisSection.classList.remove('hidden');
-        downloadButtonContainer.classList.remove('hidden');
-        pdfHeader.classList.remove('hidden');
-        setTimeout(() => {
-            analysisSection.classList.remove('opacity-0', 'transform', 'translate-y-4');
-            analysisSection.scrollIntoView({ behavior: 'smooth' });
-        }, 10);
+      });
+      doc.save('partnership-assessment.pdf');
     };
-    
-    const updateProgressIndicator = (step) => {
-        document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
-            const stepNum = index + 1;
-            const circle = indicator.querySelector('div');
-            if (stepNum <= step) {
-                circle.className = 'w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold';
-            } else {
-                circle.className = 'w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold';
-            }
-        });
-    };
-
-    const showStep = (step) => {
-        currentStep = step;
-        updateProgressIndicator(step);
-        
-        // Hide all steps
-        step1Setup.classList.add('hidden');
-        step2Personality.classList.add('hidden');
-        step3Relationship.classList.add('hidden');
-        progressIndicator.classList.add('hidden');
-        
-        // Show current step
-        if (step === 1) {
-            step1Setup.classList.remove('hidden');
-        } else if (step === 2) {
-            step2Personality.classList.remove('hidden');
-            progressIndicator.classList.remove('hidden');
-        } else if (step === 3) {
-            step3Relationship.classList.remove('hidden');
-            progressIndicator.classList.remove('hidden');
+  }
+}
+// Render details for a single peer
+function renderPeerDetail(idx) {
+  const peopleContainer = document.getElementById('results-people');
+  peopleContainer.innerHTML = '';
+  const name = people[idx];
+  const data = assessmentData[idx] || {};
+  const rel = data.relationship || {};
+  const relRows = [
+    { label: 'Mutual Trust', key: 'trust', icon: '🤝' },
+    { label: 'Reliable Backup', key: 'reliable_backup', icon: '🛡️' },
+    { label: 'Open Communication', key: 'communication', icon: '💬' },
+    { label: 'Shared Goals', key: 'goals', icon: '🎯' },
+    { label: 'Collaboration', key: 'collaboration', icon: '🤲' },
+    { label: 'Strategic Planning', key: 'strategic_planning', icon: '🗺️' }
+  ];
+  const pol = data.polarity || {};
+  const polRows = [
+    { label: 'Decision Making', key: 'decision', map: { analytical: 'Analytical', intuitive: 'Intuitive' }, icon: '🧠',
+      explain: {
+        analytical: {
+          desc: 'Analytical decision makers rely on data, logic, and careful analysis. They are thorough, objective, and minimize risk by considering all options. They may take longer to decide, but their choices are well-founded.',
+          strengths: 'Thorough, objective, minimizes risk.',
+          growth: 'May overanalyze or delay decisions.'
+        },
+        intuitive: {
+          desc: 'Intuitive decision makers trust their instincts and experience. They are comfortable making quick judgments, even with incomplete information, and often spot patterns others miss. This can lead to creative solutions and rapid progress.',
+          strengths: 'Fast, creative, adapts quickly.',
+          growth: 'May overlook details or act impulsively.'
         }
-    };
-
-    const generateAENameInputs = (count) => {
-        aeNameInputsContainer.innerHTML = Array.from({ length: count }, (_, i) => 
-            `<input type="text" class="ae-name-setup-input block w-full p-2 border border-gray-300 rounded-md shadow-sm mb-2" placeholder="AE #${i + 1} Name">`
-        ).join('');
-    };
-
-    const renderPersonalityAssessment = () => {
-        const nameInputs = document.querySelectorAll('.ae-name-setup-input');
-        const aeNames = Array.from(nameInputs).map(input => input.value.trim() || `AE #${Array.from(nameInputs).indexOf(input) + 1}`);
-        
-        let html = '';
-        aeNames.forEach((aeName, aeIndex) => {
-            html += `
-                <div class="mb-8 p-6 border border-gray-200 rounded-lg">
-                    <h4 class="text-xl font-bold mb-4 text-pink-600">${aeName}</h4>
-                    <p class="text-gray-600 mb-4">Select the option that best describes how this AE typically behaves:</p>
-            `;
-            
-            assessmentData.socialStyleQuestions.forEach((q, qIndex) => {
-                html += `
-                    <div class="mb-6">
-                        <p class="font-medium mb-3">${q.question}</p>
-                        <div class="space-y-2">
-                            ${q.options.map((option, optionIndex) => `
-                                <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                    <input type="radio" name="personality_${aeIndex}_${qIndex}" value="${option.style}" class="mr-3" required>
-                                    <span>${option.text}</span>
-                                </label>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-        });
-        
-        personalityAssessmentContainer.innerHTML = html;
-    };
-
-    const calculatePersonalityStyle = (aeIndex) => {
-        const styleCounts = { analytical: 0, driving: 0, amiable: 0, expressive: 0 };
-        
-        assessmentData.socialStyleQuestions.forEach((_, qIndex) => {
-            const selectedOption = document.querySelector(`input[name="personality_${aeIndex}_${qIndex}"]:checked`);
-            if (selectedOption) {
-                styleCounts[selectedOption.value]++;
-            }
-        });
-        
-        // Return the style with the highest count
-        return Object.entries(styleCounts).reduce((a, b) => a[1] > b[1] ? a : b)[0];
-    };
-    
-    const startPersonalityAssessment = () => {
-        const nameInputs = document.querySelectorAll('.ae-name-setup-input');
-        if (nameInputs.length === 0 || !nameInputs[0].value.trim()) {
-            alert('Please enter at least one AE name to continue.');
-            return;
+      }
+    },
+    { label: 'Communication', key: 'communication', map: { direct: 'Direct', diplomatic: 'Diplomatic' }, icon: '🗣️',
+      explain: {
+        direct: {
+          desc: 'Direct communicators are clear and to the point. They are efficient, avoids misunderstandings.',
+          strengths: 'Efficient, avoids misunderstandings.',
+          growth: 'Can be perceived as blunt.'
+        },
+        diplomatic: {
+          desc: 'Diplomatic communicators are tactful and relationship-focused. They build rapport, resolves conflict.',
+          strengths: 'Builds rapport, resolves conflict.',
+          growth: 'May avoid tough conversations.'
         }
-        
-        renderPersonalityAssessment();
-        showStep(2);
-    };
-
-    const startRelationshipAssessment = () => {
-        // Collect personality scores
-        const nameInputs = document.querySelectorAll('.ae-name-setup-input');
-        personalityScores = {};
-        scores = {};
-        
-        Array.from(nameInputs).forEach((input, i) => {
-            const aeIndex = i;
-            const aeName = input.value.trim() || `AE #${i + 1}`;
-            const personalityStyle = calculatePersonalityStyle(aeIndex);
-            
-            personalityScores[i + 1] = { name: aeName, style: personalityStyle };
-            scores[i + 1] = { name: aeName, ratings: Array(assessmentData.questions.length).fill(0) };
-        });
-        
-        renderAETabsAndCards();
-        showStep(3);
-    };
-
-    const renderAETabsAndCards = () => {
-        aeTabsContainer.innerHTML = Object.keys(scores).map((aeIndex, i) =>
-            `<button class="tab-btn ${i === 0 ? 'active' : ''}" data-ae-index="${aeIndex}">${scores[aeIndex].name}</button>`
-        ).join('');
-
-        aeCardsContainer.innerHTML = Object.keys(scores).map((aeIndex, i) => {
-            const { name, ratings } = scores[aeIndex];
-            const questionsHTML = assessmentData.questions.map((q, qIndex) => {
-                const score = ratings[qIndex] || 0;
-                const starsHTML = Array.from({ length: 5 }, (_, j) => 
-                    `<button data-ae-index="${aeIndex}" data-q-index="${qIndex}" data-rate="${j + 1}" class="star-btn p-1 rounded-full transition-transform duration-200 ease-in-out transform hover:scale-125 focus:outline-none focus:ring-2 focus:ring-offset-2" style="--ring-color: var(--hibob-pink);" aria-label="Rate ${j + 1}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${score >= j + 1 ? 'text-yellow-400 fill-current' : 'text-gray-300'}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>`
-                ).join('');
-                return `<div class="py-3 sm:flex sm:items-center sm:justify-between"><p class="text-sm text-gray-700 sm:w-2/5">${q.title}: <span class="italic text-gray-500">"${q.question}"</span></p><div class="flex justify-center items-center space-x-1 mt-2 sm:mt-0">${starsHTML}</div></div>`;
-            }).join('<hr class="my-1">');
-            return `<div class="tab-content ${i === 0 ? 'active' : ''}" data-ae-index="${aeIndex}"><div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/50">${questionsHTML}</div></div>`;
-        }).join('');
-    };
-
-    const switchTab = (aeIndex) => {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        document.querySelector(`.tab-btn[data-ae-index="${aeIndex}"]`).classList.add('active');
-        document.querySelector(`.tab-content[data-ae-index="${aeIndex}"]`).classList.add('active');
-    };
-
-    const switchExplainerTab = (targetId) => {
-        document.querySelectorAll('.explainer-tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.explainer-tab-content').forEach(content => content.classList.remove('active'));
-        document.querySelector(`.explainer-tab-btn[data-target="${targetId}"]`).classList.add('active');
-        document.getElementById(targetId).classList.add('active');
-    };
-
-    const handleScoreChange = (aeIndex, qIndex, newScore) => {
-        scores[aeIndex].ratings[qIndex] = scores[aeIndex].ratings[qIndex] === newScore ? 0 : newScore;
-        updateStarsUI(aeIndex, qIndex);
-    };
-
-    const updateStarsUI = (aeIndex, qIndex) => {
-        const score = scores[aeIndex]?.ratings[qIndex] || 0;
-        const starButtons = document.querySelectorAll(`.star-btn[data-ae-index="${aeIndex}"][data-q-index="${qIndex}"]`);
-        starButtons.forEach(button => {
-            const rate = parseInt(button.dataset.rate, 10);
-            const starIcon = button.querySelector('svg');
-            starIcon.classList.toggle('text-yellow-400', score >= rate);
-            starIcon.classList.toggle('fill-current', score >= rate);
-            starIcon.classList.toggle('text-gray-300', score < rate);
-        });
-    };
-    
-    const handleSubmit = () => {
-        if (Object.values(scores).some(ae => ae.ratings.some(r => r === 0))) {
-            feedbackMsg.classList.remove('hidden');
-            return;
+      }
+    },
+    { label: 'Work Pace', key: 'pace', map: { fast: 'Fast', deliberate: 'Deliberate' }, icon: '⚡',
+      explain: {
+        fast: {
+          desc: 'Fast workers move quickly and get results. They are responsive, meets deadlines.',
+          strengths: 'Responsive, meets deadlines.',
+          growth: 'May miss details.'
+        },
+        deliberate: {
+          desc: 'Deliberate workers are thorough and methodical. They are high quality, reliable.',
+          strengths: 'High quality, reliable.',
+          growth: 'May be slow to act.'
         }
-        feedbackMsg.classList.add('hidden');
-        
-        renderPolarityExplainer();
-
-        skillLevelsReportContainer.innerHTML = `<div class="text-center my-8 pt-8 border-t-2"><h2 class="text-3xl font-extrabold tracking-tight">Individual Assessment Details</h2></div>` + 
-        Object.keys(scores).map(aeIndex => {
-             const { name, ratings } = scores[aeIndex];
-             const personalityInfo = personalityScores[aeIndex];
-             const styleInfo = assessmentData.socialStyles[personalityInfo.style];
-            const questionsHTML = assessmentData.questions.map((q, qIndex) => {
-                const score = ratings[qIndex] || 0;
-                return `<div class="py-2 sm:flex sm:items-center sm:justify-between"><p class="text-sm text-gray-700 sm:w-2/5">${q.title}:</p><p class="text-sm font-bold text-right">${score} / 5</p></div>`;
-            }).join('<hr class="my-1 border-gray-200">');
-            
-            const personalityHTML = `
-                <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h4 class="font-semibold text-blue-800 mb-2">Communication Style: ${styleInfo.name}</h4>
-                    <p class="text-sm text-blue-700">${styleInfo.description}</p>
-                </div>
-            `;
-            
-            return `<div class="bg-white p-6 rounded-xl shadow-md border border-gray-200/50 mb-8">
-                <h3 class="text-xl font-bold p-2 rounded-lg w-full mb-4 text-center" style="color: var(--hibob-pink);">${name}</h3>
-                <div class="space-y-2">${questionsHTML}</div>
-                ${personalityHTML}
-            </div>`;
-        }).join('');
-
-        step3Relationship.classList.add('hidden');
-
-        const pointColors = ['#5C3BFF', '#00C4B3', '#E6007E', '#FFC107', '#6F42C1'];
-        skillChart.data.datasets = Object.keys(scores).map((aeIndex, i) => {
-            const aeData = scores[aeIndex];
-            const trustScores = aeData.ratings.map((r, idx) => assessmentData.questions[idx].axis === 'trust' ? r : null).filter(r => r !== null);
-            const skillScores = aeData.ratings.map((r, idx) => assessmentData.questions[idx].axis === 'skills' ? r : null).filter(r => r !== null);
-            const avgTrust = trustScores.length ? trustScores.reduce((a, b) => a + b, 0) / trustScores.length : 0;
-            const avgSkills = skillScores.length ? skillScores.reduce((a, b) => a + b, 0) / skillScores.length : 0;
-            return {
-                label: aeData.name, aeIndex: aeIndex, data: [{ x: avgTrust, y: avgSkills }], 
-                backgroundColor: pointColors[i % pointColors.length], pointRadius: 10, pointHoverRadius: 14
-            };
-        });
-        skillChart.update();
-        showAnalysis();
-    };
-
-    const handleReset = () => {
-        scores = {};
-        personalityScores = {};
-        currentStep = 1;
-        
-        // Reset all containers
-        skillLevelsReportContainer.innerHTML = '';
-        analysisSection.classList.add('hidden', 'opacity-0');
-        downloadButtonContainer.classList.add('hidden');
-        feedbackMsg.classList.add('hidden');
-        pdfHeader.classList.add('hidden');
-        polarityExplainerSection.classList.add('hidden');
-        
-        // Reset form inputs
-        document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
-        document.querySelectorAll('.ae-name-setup-input').forEach(input => input.value = '');
-        
-        // Go back to step 1
-        showStep(1);
-        initializeChart();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const handleDownload = () => {
-        const { jsPDF } = window.jspdf;
-        const contentToPrint = document.getElementById('pdfContent');
-        html2canvas(contentToPrint, { scale: 2, backgroundColor: '#ffffff', windowWidth: document.documentElement.scrollWidth, windowHeight: document.documentElement.scrollHeight }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({ orientation: 'p', unit: 'px', format: [canvas.width, canvas.height]});
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save("Strategic_Partnership_Results.pdf");
-        });
-    };
-
-    // --- Event Listeners ---
-    aeCountSelect.addEventListener('change', (e) => generateAENameInputs(e.target.value));
-    startPersonalityAssessmentBtn.addEventListener('click', startPersonalityAssessment);
-    backToSetupBtn.addEventListener('click', () => showStep(1));
-    continueToRelationshipBtn.addEventListener('click', startRelationshipAssessment);
-    backToPersonalityBtn.addEventListener('click', () => showStep(2));
-    submitBtn.addEventListener('click', handleSubmit);
-    resetBtn.addEventListener('click', handleReset);
-    downloadBtn.addEventListener('click', handleDownload);
-
-    step3Relationship.addEventListener('click', e => {
-        const starButton = e.target.closest('.star-btn');
-        if (starButton) {
-            const { aeIndex, qIndex, rate } = starButton.dataset;
-            handleScoreChange(aeIndex, parseInt(qIndex), parseInt(rate));
+      }
+    },
+    { label: 'Risk Approach', key: 'risk', map: { high: 'Embraces Innovation', low: 'Prefers Proven Methods' }, icon: '🎲',
+      explain: {
+        high: {
+          desc: 'Embraces innovation and is comfortable with uncertainty. They drive change, finds new solutions.',
+          strengths: 'Drives change, finds new solutions.',
+          growth: 'May take unnecessary risks.'
+        },
+        low: {
+          desc: 'Prefers proven methods and established processes. They are stable, minimizes mistakes.',
+          strengths: 'Stable, minimizes mistakes.',
+          growth: 'May resist change.'
         }
-        const tabButton = e.target.closest('.tab-btn');
-        if (tabButton) {
-            switchTab(tabButton.dataset.aeIndex);
+      }
+    }
+  ];
+  const style = data.socialStyle || '';
+  const styleMap = {
+    analytical: {
+      label: 'Analytical', icon: '📊',
+      desc: 'Analytical types are methodical, detail-oriented, and value accuracy. They prefer to gather all relevant information before making decisions and are often seen as logical and objective. In meetings, they may ask probing questions and seek data to support conclusions.',
+      strengths: 'Detail-oriented, logical, thorough, objective.',
+      growth: 'May seem distant or slow to decide. Can get stuck in analysis paralysis.',
+      expanded: `<ul class='list-disc pl-5 text-xs text-gray-600 mt-1'>
+        <li><b>Typical behaviors:</b> Asks for data, double-checks facts, prefers written communication.</li>
+        <li><b>How others see them:</b> Reliable, but sometimes slow or overly critical.</li>
+        <li><b>Collaboration tips:</b> Provide clear data, allow time for analysis, encourage sharing insights.</li>
+        <li><b>Watch out for:</b> Overanalyzing, reluctance to make quick decisions.</li>
+      </ul>`
+    },
+    driving: {
+      label: 'Driving', icon: '🚀',
+      desc: 'Driving personalities are decisive, results-focused, and thrive on achievement. They are quick to make decisions, set ambitious goals, and push teams forward. Their directness and confidence can inspire action.',
+      strengths: 'Gets things done, confident, ambitious, decisive.',
+      growth: 'May be impatient or overlook input from others.',
+      expanded: `<ul class='list-disc pl-5 text-xs text-gray-600 mt-1'>
+        <li><b>Typical behaviors:</b> Sets clear goals, moves quickly, expects high performance.</li>
+        <li><b>How others see them:</b> Inspiring, but sometimes impatient or blunt.</li>
+        <li><b>Collaboration tips:</b> Be concise, focus on outcomes, respect their need for efficiency.</li>
+        <li><b>Watch out for:</b> Dismissing others' input, moving too fast for the team.</li>
+      </ul>`
+    },
+    amiable: {
+      label: 'Amiable', icon: '🤗',
+      desc: 'Amiable types are supportive, cooperative, and value relationships. They work to create harmony and are sensitive to the needs of others. They excel at building consensus and resolving conflicts diplomatically.',
+      strengths: 'Team player, empathetic, diplomatic, supportive.',
+      growth: 'May avoid conflict or be indecisive.',
+      expanded: `<ul class='list-disc pl-5 text-xs text-gray-600 mt-1'>
+        <li><b>Typical behaviors:</b> Listens actively, seeks input, mediates disagreements.</li>
+        <li><b>How others see them:</b> Trustworthy, but sometimes indecisive or conflict-averse.</li>
+        <li><b>Collaboration tips:</b> Show appreciation, involve them in team decisions, provide reassurance.</li>
+        <li><b>Watch out for:</b> Reluctance to address issues directly, difficulty making tough calls.</li>
+      </ul>`
+    },
+    expressive: {
+      label: 'Expressive', icon: '🎉',
+      desc: 'Expressive types are enthusiastic, creative, and persuasive. They energize teams with their ideas and optimism, and are skilled at motivating others and generating excitement for new initiatives.',
+      strengths: 'Motivates others, generates ideas, persuasive, energetic.',
+      growth: 'May be disorganized or impulsive.',
+      expanded: `<ul class='list-disc pl-5 text-xs text-gray-600 mt-1'>
+        <li><b>Typical behaviors:</b> Shares ideas freely, encourages brainstorming, celebrates wins.</li>
+        <li><b>How others see them:</b> Inspiring, but sometimes scattered or unfocused.</li>
+        <li><b>Collaboration tips:</b> Encourage creativity, provide structure, help prioritize tasks.</li>
+        <li><b>Watch out for:</b> Losing focus, neglecting follow-through.</li>
+      </ul>`
+    }
+  };
+  // Action items based on scores
+  const actions = [];
+  if ((rel.trust || 0) < 3) actions.push('Schedule a 1:1 coffee chat or informal meeting to build mutual trust. Share a recent success and ask about theirs.');
+  if ((rel.reliable_backup || 0) < 3) actions.push('Clarify roles and responsibilities in your next project. For example, write down who owns which deliverable and review together.');
+  if ((rel.communication || 0) < 3) actions.push('Set up a recurring 15-minute sync to discuss deal strategy and encourage open feedback. Try using a shared doc for agenda and notes.');
+  if ((rel.goals || 0) < 3) actions.push('At your next team meeting, align on a shared goal and write it down. Ask each person to describe what success looks like.');
+  if ((rel.collaboration || 0) < 3) actions.push('Invite your peer to co-lead a client call or demo. Debrief afterwards to discuss what went well and what could improve.');
+  if ((rel.strategic_planning || 0) < 3) actions.push('Plan your next joint activity together, such as a customer workshop. Outline the agenda collaboratively in advance.');
+  if (actions.length === 0) actions.push('Keep up the great partnership! Consider celebrating your success with a team lunch or shoutout.');
+  // Build HTML
+  const card = document.createElement('div');
+  card.className = 'bg-white rounded-xl shadow-md border border-gray-200/80 mb-8 p-6';
+  card.innerHTML = `
+    <div class="mb-6">
+      <h4 class="font-semibold text-base text-gray-700 mb-2">Relationship Matrix</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${relRows.map(row => {
+          const score = rel[row.key] || 0;
+          let badge = score >= 4 ? 'bg-green-100 text-green-700' : score >= 3 ? 'bg-yellow-100 text-yellow-700' : 'bg-pink-100 text-hibob-pink';
+          return `<div class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
+            <span class="text-xl">${row.icon}</span>
+            <span class="flex-1 text-sm">${row.label}</span>
+            <span class="px-2 py-1 rounded text-xs font-bold ${badge}">${score}/5</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="mb-6">
+      <h4 class="font-semibold text-base text-gray-700 mb-2">Work Style Preferences</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        ${polRows.map(row => {
+          const val = pol[row.key];
+          if (!val) return '';
+          const expl = row.explain[val];
+          return `<div class="bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col gap-1">
+            <div class="flex items-center gap-2 mb-1"><span class="text-lg">${row.icon}</span><span class="font-semibold text-sm">${row.label}: ${row.map[val]}</span></div>
+            <div class="text-xs text-gray-600 mb-1">${expl.desc}</div>
+            ${expl.expanded || ''}
+            <div class="flex gap-2 text-xs">
+              <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded">Strength: ${expl.strengths}</span>
+              <span class="bg-pink-100 text-hibob-pink px-2 py-0.5 rounded">Growth: ${expl.growth}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="mb-6">
+      <h4 class="font-semibold text-base text-gray-700 mb-2">Dominant Interaction Style</h4>
+      <div class="bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col gap-1">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-lg">${styleMap[style]?.icon || ''}</span>
+          <span class="font-semibold text-sm">${styleMap[style]?.label || '-'}</span>
+        </div>
+        <div class="text-xs text-gray-600 mb-1">${styleMap[style]?.desc || ''}</div>
+        ${styleMap[style]?.expanded || ''}
+        <div class="flex gap-2 text-xs">
+          <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded">Strength: ${styleMap[style]?.strengths || ''}</span>
+          <span class="bg-pink-100 text-hibob-pink px-2 py-0.5 rounded">Growth: ${styleMap[style]?.growth || ''}</span>
+        </div>
+      </div>
+    </div>
+    <div class="mb-2">
+      <h4 class="font-semibold text-base text-gray-700 mb-2">Action Items</h4>
+      <div class="bg-gray-50 border border-gray-100 rounded-lg p-4">
+        <ul class="list-disc pl-6 text-xs text-gray-700">
+          ${actions.map(a => `<li>${a}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `;
+  peopleContainer.appendChild(card);
+  // Highlight selected tab
+  const tabsContainer = document.getElementById('results-tabs');
+  Array.from(tabsContainer.children).forEach((tab, i) => {
+    tab.className = 'px-4 py-2 rounded-lg font-semibold ' + (i === idx ? 'bg-pink-100 text-hibob-pink' : 'bg-gray-100 text-gray-600');
+  });
+}
+// Call renderResultsPage when showing results step
+const origShowStep = showStep;
+showStep = function(step) {
+  origShowStep(step);
+  if (step === 3) renderResultsPage();
+};
+
+// DEV ONLY: Example PDF button logic (remove after testing)
+document.addEventListener('DOMContentLoaded', () => {
+  const exampleBtn = document.getElementById('download-example-pdf-btn-text');
+  if (exampleBtn) {
+    exampleBtn.onclick = function() {
+      people = ['Alice Example', 'Bob Sample'];
+      assessmentData = [
+        {
+          relationship: {
+            trust: 5, reliable_backup: 4, communication: 5, goals: 4, collaboration: 5, strategic_planning: 4
+          },
+          polarity: {
+            decision: 'analytical', communication: 'direct', pace: 'fast', risk: 'high'
+          },
+          socialStyle: 'driving'
+        },
+        {
+          relationship: {
+            trust: 2, reliable_backup: 2, communication: 3, goals: 2, collaboration: 3, strategic_planning: 2
+          },
+          polarity: {
+            decision: 'intuitive', communication: 'diplomatic', pace: 'deliberate', risk: 'low'
+          },
+          socialStyle: 'amiable'
         }
+      ];
+      renderResultsPage();
+      setTimeout(() => {
+        document.getElementById('results-download-btn')?.click();
+      }, 500);
+    };
+  }
+});
+
+// DEV ONLY: Example PDF button logic for setup page (remove after testing)
+document.addEventListener('DOMContentLoaded', () => {
+  const exampleBtnSetup = document.getElementById('download-example-pdf-btn-setup');
+  if (exampleBtnSetup) {
+    exampleBtnSetup.onclick = function() {
+      people = ['Alice Example', 'Bob Sample'];
+      assessmentData = [
+        {
+          relationship: {
+            trust: 5, reliable_backup: 4, communication: 5, goals: 4, collaboration: 5, strategic_planning: 4
+          },
+          polarity: {
+            decision: 'analytical', communication: 'direct', pace: 'fast', risk: 'high'
+          },
+          socialStyle: 'driving'
+        },
+        {
+          relationship: {
+            trust: 2, reliable_backup: 2, communication: 3, goals: 2, collaboration: 3, strategic_planning: 2
+          },
+          polarity: {
+            decision: 'intuitive', communication: 'diplomatic', pace: 'deliberate', risk: 'low'
+          },
+          socialStyle: 'amiable'
+        }
+      ];
+      showStep(3);
+      setTimeout(() => {
+        document.getElementById('results-download-btn')?.click();
+      }, 500);
+    };
+  }
+});
+
+// --- PDF Generation with Text Icons ---
+function generatePdfTextIcons() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  let y = 40;
+  doc.setFontSize(22);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Strategic Partnership Assessment', pageWidth / 2, y, { align: 'center' });
+  y += 30;
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, pageWidth - 60, 40, { align: 'right' });
+  y += 10;
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Executive Summary', 60, y);
+  y += 18;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(12);
+  const summaryText = `You assessed ${people.length} partnership(s) across relationship, work style, and interaction style dimensions. This report provides a comprehensive analysis of your peer/colleague partnerships, blending quantitative assessment with strategic polarity mapping to identify actionable growth opportunities. The matrix below shows the overall relationship landscape, with each peer plotted by trust and skills/alignment.`;
+  const summaryLines = doc.splitTextToSize(summaryText, pageWidth - 120);
+  doc.text(summaryLines, 60, y);
+  y += summaryLines.length * 15 + 10;
+
+  // Matrix chart as image
+  const matrixCanvas = document.getElementById('matrixChart-all');
+  if (matrixCanvas && matrixCanvas.offsetParent !== null) {
+    // Wait a bit to ensure chart is rendered
+    setTimeout(() => {
+      html2canvas(matrixCanvas, { backgroundColor: null }).then(canvas => {
+        const matrixImg = canvas.toDataURL('image/png');
+        try {
+          doc.addImage(matrixImg, 'PNG', 60, y, pageWidth - 120, (pageWidth - 120) * 0.7);
+          y += (pageWidth - 120) * 0.7 + 20;
+        } catch (e) {
+          // If PNG is corrupt, skip image
+        }
+        addQuadrantMeanings(doc, y, pageWidth);
+        addPersonPagesTextIcons(doc, pageWidth);
+        doc.save('partnership-assessment-text-icons.pdf');
+      }).catch(() => {
+        // If html2canvas fails, just skip the image
+        addQuadrantMeanings(doc, y, pageWidth);
+        addPersonPagesTextIcons(doc, pageWidth);
+        doc.save('partnership-assessment-text-icons.pdf');
+      });
+    }, 300); // 300ms delay
+  } else {
+    addQuadrantMeanings(doc, y, pageWidth);
+    addPersonPagesTextIcons(doc, pageWidth);
+    doc.save('partnership-assessment-text-icons.pdf');
+  }
+}
+
+function addPersonPagesTextIcons(doc, pageWidth) {
+  const relRows = [
+    { label: 'Mutual Trust', key: 'trust' },
+    { label: 'Reliable Backup', key: 'reliable_backup' },
+    { label: 'Open Communication', key: 'communication' },
+    { label: 'Shared Goals', key: 'goals' },
+    { label: 'Collaboration', key: 'collaboration' },
+    { label: 'Strategic Planning', key: 'strategic_planning' }
+  ];
+  people.forEach((name, idx) => {
+    doc.addPage();
+    let py = 60;
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(name, 60, py);
+    py += 24;
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Relationship Matrix', 60, py);
+    py += 18;
+    doc.setFont('helvetica', 'normal');
+    const rel = (assessmentData[idx] || {}).relationship || {};
+    relRows.forEach(row => {
+      doc.text(`${row.label}: ${rel[row.key] || '-'}/5`, 80, py);
+      py += 15;
     });
-
-    polarityExplainerSection.addEventListener('click', e => {
-        const explainerTabButton = e.target.closest('.explainer-tab-btn');
-        if(explainerTabButton) {
-            switchExplainerTab(explainerTabButton.dataset.target);
+    py += 12;
+    // Work Style
+    doc.setFont('helvetica', 'bold');
+    doc.text('Work Style Preferences', 60, py);
+    py += 18;
+    doc.setFont('helvetica', 'normal');
+    const pol = (assessmentData[idx] || {}).polarity || {};
+    const polRows = [
+      { label: 'Decision Making', key: 'decision', map: { analytical: 'Analytical', intuitive: 'Intuitive' }, icon: '🧠', explain: {
+        analytical: {
+          desc: 'Analytical decision makers rely on data, logic, and careful analysis. They are thorough, objective, and minimize risk by considering all options. They may take longer to decide, but their choices are well-founded.',
+          strengths: 'Thorough, objective, minimizes risk.',
+          growth: 'May overanalyze or delay decisions.'
+        },
+        intuitive: {
+          desc: 'Intuitive decision makers trust their instincts and experience. They are comfortable making quick judgments, even with incomplete information, and often spot patterns others miss. This can lead to creative solutions and rapid progress.',
+          strengths: 'Fast, creative, adapts quickly.',
+          growth: 'May overlook details or act impulsively.'
         }
+      } },
+      { label: 'Communication', key: 'communication', map: { direct: 'Direct', diplomatic: 'Diplomatic' }, icon: '🗣️', explain: {
+        direct: {
+          desc: 'Direct communicators are clear and to the point. They are efficient, avoids misunderstandings.',
+          strengths: 'Efficient, avoids misunderstandings.',
+          growth: 'Can be perceived as blunt.'
+        },
+        diplomatic: {
+          desc: 'Diplomatic communicators are tactful and relationship-focused. They build rapport, resolves conflict.',
+          strengths: 'Builds rapport, resolves conflict.',
+          growth: 'May avoid tough conversations.'
+        }
+      } },
+      { label: 'Work Pace', key: 'pace', map: { fast: 'Fast', deliberate: 'Deliberate' }, icon: '⚡', explain: {
+        fast: {
+          desc: 'Fast workers move quickly and get results. They are responsive, meets deadlines.',
+          strengths: 'Responsive, meets deadlines.',
+          growth: 'May miss details.'
+        },
+        deliberate: {
+          desc: 'Deliberate workers are thorough and methodical. They are high quality, reliable.',
+          strengths: 'High quality, reliable.',
+          growth: 'May be slow to act.'
+        }
+      } },
+      { label: 'Risk Approach', key: 'risk', map: { high: 'Embraces Innovation', low: 'Prefers Proven Methods' }, icon: '🎲', explain: {
+        high: {
+          desc: 'Embraces innovation and is comfortable with uncertainty. They drive change, finds new solutions.',
+          strengths: 'Drives change, finds new solutions.',
+          growth: 'May take unnecessary risks.'
+        },
+        low: {
+          desc: 'Prefers proven methods and established processes. They are stable, minimizes mistakes.',
+          strengths: 'Stable, minimizes mistakes.',
+          growth: 'May resist change.'
+        }
+      } }
+    ];
+    polRows.forEach(row => {
+      const val = pol[row.key];
+      if (!val) return;
+      doc.text(`${row.icon} ${row.label}: ${row.map[val]}`, 80, py);
+      py += 13;
+      doc.setFontSize(10);
+      const explLines = doc.splitTextToSize(row.explain[val], pageWidth - 120);
+      doc.text(explLines, 100, py);
+      doc.setFontSize(13);
+      py += explLines.length * 13 + 8;
     });
+    // Interaction Style
+    py += 4;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Dominant Interaction Style', 60, py);
+    py += 18;
+    doc.setFont('helvetica', 'normal');
+    const style = (assessmentData[idx] || {}).socialStyle || '';
+    const styleMap = {
+      analytical: 'Analytical: Methodical, detail-oriented, values accuracy. Prefers to gather all relevant information before making decisions.',
+      driving: 'Driving: Decisive, results-focused, and thrives on achievement. Quick to make decisions and set ambitious goals.',
+      amiable: 'Amiable: Supportive, cooperative, and values relationships. Works to create harmony and is sensitive to the needs of others.',
+      expressive: 'Expressive: Enthusiastic, creative, and persuasive. Energizes teams with ideas and optimism.'
+    };
+    const styleLines = doc.splitTextToSize(styleMap[style] || '-', pageWidth - 120);
+    doc.text(styleLines, 80, py);
+    py += styleLines.length * 13 + 8;
+    // Action Items
+    doc.setFont('helvetica', 'bold');
+    doc.text('Action Items', 60, py);
+    py += 16;
+    doc.setFont('helvetica', 'normal');
+    const actions = [];
+    if ((rel.trust || 0) < 3) actions.push('Schedule a 1:1 coffee chat or informal meeting to build mutual trust. Share a recent success and ask about theirs.');
+    if ((rel.reliable_backup || 0) < 3) actions.push('Clarify roles and responsibilities in your next project. For example, write down who owns which deliverable and review together.');
+    if ((rel.communication || 0) < 3) actions.push('Set up a recurring 15-minute sync to discuss deal strategy and encourage open feedback. Try using a shared doc for agenda and notes.');
+    if ((rel.goals || 0) < 3) actions.push('At your next team meeting, align on a shared goal and write it down. Ask each person to describe what success looks like.');
+    if ((rel.collaboration || 0) < 3) actions.push('Invite your peer to co-lead a client call or demo. Debrief afterwards to discuss what went well and what could improve.');
+    if ((rel.strategic_planning || 0) < 3) actions.push('Plan your next joint activity together, such as a customer workshop. Outline the agenda collaboratively in advance.');
+    if (actions.length === 0) actions.push('Keep up the great partnership! Consider celebrating your success with a team lunch or shoutout.');
+    actions.forEach(a => {
+      doc.setFontSize(11);
+      const actionLines = doc.splitTextToSize(`- ${a}`, pageWidth - 120);
+      doc.text(actionLines, 80, py);
+      py += actionLines.length * 12 + 4;
+    });
+  });
+}
 
-    // --- Initial Page Load ---
-    generateAENameInputs(1);
-    initializeChart();
+function addQuadrantMeanings(doc, y, pageWidth) {
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Quadrant Meanings', 60, y);
+  y += 18;
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  const quadrantLines = [
+    ['Anarchy', 'High skills/alignment, low trust. Great potential, but trust must be built for success.'],
+    ['Synergy', 'High trust and high skills/alignment. Ideal partnership for high performance.'],
+    ['Apathy', 'Low trust and low skills/alignment. Partnership needs significant attention.'],
+    ['Energy', 'High trust, low skills/alignment. Good relationship, but need to align on goals and skills.']
+  ];
+  const quadrantColors = ['#e6007e', '#22c55e', '#bbb', '#f59e42'];
+  quadrantLines.forEach(([label, desc], i) => {
+    doc.setTextColor(quadrantColors[i]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(label, 70, y);
+    doc.setTextColor('#444');
+    doc.setFont('helvetica', 'normal');
+    doc.text(desc, 130, y);
+    y += 18;
+  });
+}
+
+</script>
+
+<!-- Move this to after the script tag, at the very end of the body -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- Text Icons Version ---
+  const exampleBtnText = document.getElementById('download-example-pdf-btn-text');
+  if (exampleBtnText) {
+    exampleBtnText.onclick = function() {
+      people = ['Alice Example', 'Bob Sample'];
+      assessmentData = [
+        {
+          relationship: {
+            trust: 5, reliable_backup: 4, communication: 5, goals: 4, collaboration: 5, strategic_planning: 4
+          },
+          polarity: {
+            decision: 'analytical', communication: 'direct', pace: 'fast', risk: 'high'
+          },
+          socialStyle: 'driving'
+        },
+        {
+          relationship: {
+            trust: 2, reliable_backup: 2, communication: 3, goals: 2, collaboration: 3, strategic_planning: 2
+          },
+          polarity: {
+            decision: 'intuitive', communication: 'diplomatic', pace: 'deliberate', risk: 'low'
+          },
+          socialStyle: 'amiable'
+        }
+      ];
+      renderResultsPage();
+      setTimeout(() => generatePdfTextIcons(), 500);
+    };
+  }
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- Print-Friendly PDF Button ---
+  const printBtn = document.getElementById('print-friendly-btn');
+  if (printBtn) {
+    printBtn.onclick = function() {
+      document.body.classList.add('print-mode');
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => {
+          document.body.classList.remove('print-mode');
+        }, 500);
+      }, 100);
+    };
+  }
+});
+</script>
 </body>
 </html>
